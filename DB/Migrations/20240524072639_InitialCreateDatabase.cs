@@ -11,12 +11,18 @@ namespace DB.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "shared");
+
+            migrationBuilder.CreateSequence<int>(
+                name: "EntitySeq",
+                schema: "shared");
+
             migrationBuilder.CreateTable(
                 name: "Flight",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(type: "int", nullable: false, defaultValueSql: "NEXT VALUE FOR shared.EntitySeq"),
                     flightCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     departureAirport = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     departureTime = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -33,8 +39,7 @@ namespace DB.Migrations
                 name: "User",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(type: "int", nullable: false, defaultValueSql: "NEXT VALUE FOR shared.EntitySeq"),
                     login = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     email = table.Column<string>(type: "nvarchar(max)", nullable: false)
@@ -48,8 +53,7 @@ namespace DB.Migrations
                 name: "FlightReservation",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(type: "int", nullable: false, defaultValueSql: "NEXT VALUE FOR shared.EntitySeq"),
                     FlightId = table.Column<int>(type: "int", nullable: true),
                     UserId = table.Column<int>(type: "int", nullable: true),
                     numberOfReservedSeats = table.Column<long>(type: "bigint", nullable: false)
@@ -93,6 +97,10 @@ namespace DB.Migrations
 
             migrationBuilder.DropTable(
                 name: "User");
+
+            migrationBuilder.DropSequence(
+                name: "EntitySeq",
+                schema: "shared");
         }
     }
 }

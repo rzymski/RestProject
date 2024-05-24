@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DB.Migrations
 {
     [DbContext(typeof(MyDBContext))]
-    [Migration("20240524072120_InitialCreateDatabase")]
+    [Migration("20240524072639_InitialCreateDatabase")]
     partial class InitialCreateDatabase
     {
         /// <inheritdoc />
@@ -25,13 +25,14 @@ namespace DB.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.HasSequence<int>("EntitySeq", "shared");
+
             modelBuilder.Entity("DB.Entities.Flight", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("int")
+                        .HasDefaultValueSql("NEXT VALUE FOR shared.EntitySeq");
 
                     b.Property<DateTime>("arrivalTime")
                         .HasColumnType("datetime2");
@@ -63,9 +64,8 @@ namespace DB.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("int")
+                        .HasDefaultValueSql("NEXT VALUE FOR shared.EntitySeq");
 
                     b.Property<int?>("FlightId")
                         .HasColumnType("int");
@@ -89,9 +89,8 @@ namespace DB.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("int")
+                        .HasDefaultValueSql("NEXT VALUE FOR shared.EntitySeq");
 
                     b.Property<string>("email")
                         .IsRequired()
