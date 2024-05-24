@@ -1,12 +1,9 @@
-﻿using System.Collections.Generic;
-using DB.Dto.Message;
-using DB.Repositories.Interfaces;
+﻿using DB.Repositories.Interfaces;
 using DB.Entities;
-using System.Linq;
 
 namespace DB.Services.Interfaces
 {
-    public class BaseService<T, TDto, TAddEditDto> : IBaseService<T, TDto, TAddEditDto> where T : BaseEntity where TDto : BaseDto, new() where TAddEditDto : class
+    public class BaseService<T, TDto, TAddEditDto> : IBaseService<T, TDto, TAddEditDto> where T : BaseEntity, new() where TDto : class, new() where TAddEditDto : class
     {
         protected readonly IBaseRepository<T> repository;
 
@@ -38,6 +35,13 @@ namespace DB.Services.Interfaces
             return entity.Id;
         }
 
+        public List<int> AddList(List<TAddEditDto> items)
+        {
+            var entities = items.Select(item => MapAddEditDtoToEntity(item)).ToList(); // Mapowanie listy DTO na listę encji
+            repository.AddList(entities);
+            return entities.Select(e => e.Id).ToList();
+        }
+
         public bool Update(int id, TAddEditDto item)
         {
             var existingItem = repository.GetById(id);
@@ -61,10 +65,7 @@ namespace DB.Services.Interfaces
         // Metoda do mapowania encji na DTO
         protected virtual TDto MapToDto(T entity)
         {
-            return new TDto
-            {
-                Id = entity.Id
-            };
+            return new TDto();
         }
 
         // Metoda do mapowania DTO na encję

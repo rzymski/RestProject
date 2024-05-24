@@ -34,24 +34,24 @@ namespace DB.Migrations
                         .HasColumnType("int")
                         .HasDefaultValueSql("NEXT VALUE FOR shared.EntitySeq");
 
-                    b.Property<DateTime>("arrivalTime")
+                    b.Property<DateTime>("ArrivalTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<long>("capacity")
+                    b.Property<long>("Capacity")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("departureAirport")
+                    b.Property<string>("DepartureAirport")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("departureTime")
+                    b.Property<DateTime>("DepartureTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("destinationAirport")
+                    b.Property<string>("DestinationAirport")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("flightCode")
+                    b.Property<string>("FlightCode")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -73,7 +73,7 @@ namespace DB.Migrations
                     b.Property<int?>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<long>("numberOfReservedSeats")
+                    b.Property<long>("NumberOfReservedSeats")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
@@ -92,15 +92,15 @@ namespace DB.Migrations
                         .HasColumnType("int")
                         .HasDefaultValueSql("NEXT VALUE FOR shared.EntitySeq");
 
-                    b.Property<string>("email")
+                    b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("login")
+                    b.Property<string>("Login")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("password")
+                    b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

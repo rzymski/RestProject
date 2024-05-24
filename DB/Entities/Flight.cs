@@ -2,12 +2,12 @@
 {
     public class Flight : BaseEntity
     {
-        public string flightCode {  get; set; }
-        public string departureAirport { get; set; }
-        public DateTime departureTime { get; set; }
-        public string destinationAirport { get; set; }
-        public DateTime arrivalTime { get; set; }
-        public long capacity { get; set; }
+        public string FlightCode {  get; set; }
+        public string DepartureAirport { get; set; }
+        public DateTime DepartureTime { get; set; }
+        public string DestinationAirport { get; set; }
+        public DateTime ArrivalTime { get; set; }
+        public long Capacity { get; set; }
 
         public ICollection<FlightReservation> FlightReservations { get; set; }
 

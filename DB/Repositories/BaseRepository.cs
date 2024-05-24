@@ -25,7 +25,14 @@ namespace DB.Repositories
 
         public void Add(T entity)
         {
+            Console.WriteLine($"Dostal: {entity}");
             _dbContext.Set<T>().Add(entity);
+            _dbContext.SaveChanges();
+        }
+
+        public void AddList(List<T> entities)
+        {
+            _dbContext.Set<T>().AddRange(entities);
             _dbContext.SaveChanges();
         }
 
