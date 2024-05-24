@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DB.Migrations
 {
     [DbContext(typeof(MyDBContext))]
-    [Migration("20240523214238_InitialCreateDatabase")]
+    [Migration("20240524072120_InitialCreateDatabase")]
     partial class InitialCreateDatabase
     {
         /// <inheritdoc />
@@ -25,24 +25,13 @@ namespace DB.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("DB.Entities.BaseEntity", b =>
+            modelBuilder.Entity("DB.Entities.Flight", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.HasKey("Id");
-
-                    b.ToTable("BaseEntity");
-
-                    b.UseTptMappingStrategy();
-                });
-
-            modelBuilder.Entity("DB.Entities.Flight", b =>
-                {
-                    b.HasBaseType("DB.Entities.BaseEntity");
 
                     b.Property<DateTime>("arrivalTime")
                         .HasColumnType("datetime2");
@@ -65,12 +54,18 @@ namespace DB.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.HasKey("Id");
+
                     b.ToTable("Flight", (string)null);
                 });
 
             modelBuilder.Entity("DB.Entities.FlightReservation", b =>
                 {
-                    b.HasBaseType("DB.Entities.BaseEntity");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("FlightId")
                         .HasColumnType("int");
@@ -81,6 +76,8 @@ namespace DB.Migrations
                     b.Property<long>("numberOfReservedSeats")
                         .HasColumnType("bigint");
 
+                    b.HasKey("Id");
+
                     b.HasIndex("FlightId");
 
                     b.HasIndex("UserId");
@@ -90,7 +87,11 @@ namespace DB.Migrations
 
             modelBuilder.Entity("DB.Entities.User", b =>
                 {
-                    b.HasBaseType("DB.Entities.BaseEntity");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("email")
                         .IsRequired()
@@ -104,16 +105,9 @@ namespace DB.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("User", (string)null);
-                });
+                    b.HasKey("Id");
 
-            modelBuilder.Entity("DB.Entities.Flight", b =>
-                {
-                    b.HasOne("DB.Entities.BaseEntity", null)
-                        .WithOne()
-                        .HasForeignKey("DB.Entities.Flight", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.ToTable("User", (string)null);
                 });
 
             modelBuilder.Entity("DB.Entities.FlightReservation", b =>
@@ -121,31 +115,16 @@ namespace DB.Migrations
                     b.HasOne("DB.Entities.Flight", "Flight")
                         .WithMany("FlightReservations")
                         .HasForeignKey("FlightId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("DB.Entities.BaseEntity", null)
-                        .WithOne()
-                        .HasForeignKey("DB.Entities.FlightReservation", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("DB.Entities.User", "User")
                         .WithMany("FlightReservations")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Flight");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("DB.Entities.User", b =>
-                {
-                    b.HasOne("DB.Entities.BaseEntity", null)
-                        .WithOne()
-                        .HasForeignKey("DB.Entities.User", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("DB.Entities.Flight", b =>

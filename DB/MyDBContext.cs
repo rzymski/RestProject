@@ -17,14 +17,25 @@ namespace DB
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<BaseEntity>().Property(p => p.Id).UseIdentityColumn(seed: 1, increment: 1);
+            modelBuilder.Ignore<BaseEntity>();
+
+            //modelBuilder.Entity<BaseEntity>().Property(p => p.Id).UseIdentityColumn(seed: 1, increment: 1);
 
             modelBuilder.Entity<Flight>().ToTable("Flight");
             modelBuilder.Entity<User>().ToTable("User");
             modelBuilder.Entity<FlightReservation>().ToTable("FlightReservation");
 
-            modelBuilder.Entity<FlightReservation>().HasOne(fr => fr.Flight).WithMany(f => f.FlightReservations).HasForeignKey(fr => fr.FlightId).OnDelete(DeleteBehavior.Restrict);
-            modelBuilder.Entity<FlightReservation>().HasOne(fr => fr.User).WithMany(u => u.FlightReservations).HasForeignKey(fr => fr.UserId).OnDelete(DeleteBehavior.Restrict); 
+            modelBuilder.Entity<Flight>().HasKey(f => f.Id);
+            modelBuilder.Entity<Flight>().Property(f => f.Id).UseIdentityColumn(seed: 1, increment: 1);
+
+            modelBuilder.Entity<User>().HasKey(u => u.Id);
+            modelBuilder.Entity<User>().Property(u => u.Id).UseIdentityColumn(seed: 1, increment: 1);
+
+            modelBuilder.Entity<FlightReservation>().HasKey(fr => fr.Id);
+            modelBuilder.Entity<FlightReservation>().Property(fr => fr.Id).UseIdentityColumn(seed: 1, increment: 1);
+
+            modelBuilder.Entity<FlightReservation>().HasOne(fr => fr.Flight).WithMany(f => f.FlightReservations).HasForeignKey(fr => fr.FlightId).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<FlightReservation>().HasOne(fr => fr.User).WithMany(u => u.FlightReservations).HasForeignKey(fr => fr.UserId).OnDelete(DeleteBehavior.Cascade); 
         }
     }
 }
