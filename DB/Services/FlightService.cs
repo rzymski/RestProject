@@ -43,8 +43,8 @@ namespace DB.Services
 
         public List<FlightDto> GetByParameters(string? departureAirport, string? destinationAirport, DateTime? departureTime, DateTime? arrivalTime)
         {
-            var results = repository.GetAll().Where(p =>    (string.IsNullOrEmpty(departureAirport) || p.DepartureAirport == departureAirport) &&
-                                                            (string.IsNullOrEmpty(destinationAirport) || p.DestinationAirport == destinationAirport) &&
+            var results = baseRepository.GetAll().Where(p =>    (string.IsNullOrEmpty(departureAirport) || p.DepartureAirport.Equals(departureAirport, StringComparison.OrdinalIgnoreCase)) &&
+                                                            (string.IsNullOrEmpty(destinationAirport) || p.DestinationAirport.Equals(destinationAirport, StringComparison.OrdinalIgnoreCase)) &&
                                                             (!departureTime.HasValue || p.DepartureTime == departureTime) &&
                                                             (!arrivalTime.HasValue || p.ArrivalTime == arrivalTime)).Select(MapToDto).ToList();
             return results;

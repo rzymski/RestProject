@@ -5,8 +5,6 @@ namespace DB.Repositories
 {
     public class FlightReservationRepository : BaseRepository<FlightReservation>, IFlightReservationRepository
     {
-        public FlightReservationRepository(MyDBContext dbContext) : base(dbContext)
-        {
-        }
+        public FlightReservationRepository(MyDBContext dbContext) : base(dbContext) {}
     }
 }

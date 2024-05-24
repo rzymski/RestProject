@@ -1,4 +1,7 @@
-﻿namespace DB.Entities
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+
+namespace DB.Entities
 {
     public class User : BaseEntity
     {

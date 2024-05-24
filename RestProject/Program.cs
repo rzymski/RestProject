@@ -9,10 +9,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
 builder.Services.AddScoped(typeof(IFlightRepository), typeof(FlightRepository));
-builder.Services.AddScoped(typeof(IFlightReservationRepository), typeof(FlightReservationRepository));
 builder.Services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
+builder.Services.AddScoped(typeof(IFlightReservationRepository), typeof(FlightReservationRepository));
+
 builder.Services.AddScoped(typeof(IBaseService<,,>), typeof(BaseService<,,>));
 builder.Services.AddScoped(typeof(IFlightService), typeof(FlightService));
+builder.Services.AddScoped(typeof(IUserService), typeof(UserService));
 
 builder.Services.AddDbContext<MyDBContext>(options =>
 {

@@ -6,7 +6,7 @@ namespace DB.Repositories
 {
     public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
     {
-        private readonly MyDBContext _dbContext;
+        protected readonly MyDBContext _dbContext;
 
         public BaseRepository(MyDBContext dbContext)
         {
@@ -25,7 +25,6 @@ namespace DB.Repositories
 
         public void Add(T entity)
         {
-            Console.WriteLine($"Dostal: {entity}");
             _dbContext.Set<T>().Add(entity);
             _dbContext.SaveChanges();
         }
