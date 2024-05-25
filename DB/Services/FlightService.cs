@@ -10,7 +10,7 @@ namespace DB.Services
     {
         public FlightService(IFlightRepository repository) : base(repository) {}
 
-        protected override FlightDto MapToDto(Flight flight)
+        public override FlightDto MapToDto(Flight flight)
         {
             if (flight == null)
                 throw new ArgumentNullException(nameof(flight), "Flight entity cannot be null.");
@@ -26,7 +26,7 @@ namespace DB.Services
             };
         }
 
-        protected override Flight MapAddEditDtoToEntity(FlightAddEditDto dto, Flight flight)
+        public override Flight MapAddEditDtoToEntity(FlightAddEditDto dto, Flight? flight = null)
         {
             if (flight == null)
                 flight = new Flight();

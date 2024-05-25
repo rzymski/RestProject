@@ -10,5 +10,7 @@ namespace DB.Services.Interfaces
         int Add(TAddEditDto item);
         List<int> AddList(List<TAddEditDto> items);
         bool Update(int id, TAddEditDto item);
+        TDto MapToDto(T entity);
+        T MapAddEditDtoToEntity(TAddEditDto addEditDto, T? entity = null);
     }
 }

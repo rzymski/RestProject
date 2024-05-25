@@ -14,20 +14,14 @@ namespace DB.Services
             userRepository = repository;
         }
 
-        protected override UserDto MapToDto(User user)
+        public override UserDto MapToDto(User user)
         {
             if (user == null)
                 throw new ArgumentNullException(nameof(user), "User entity cannot be null.");
-            return new UserDto
-            {
-                Id = user.Id,
-                Login = user.Login,
-                Password = user.Password,
-                Email = user.Email
-            };
+            return new UserDto(user.Id, user.Login, user.Password, user.Email);
         }
 
-        protected override User MapAddEditDtoToEntity(UserAddEditDto dto, User user)
+        public override User MapAddEditDtoToEntity(UserAddEditDto dto, User? user = null)
         {
             if (user == null)
                 user = new User();
@@ -39,7 +33,7 @@ namespace DB.Services
             return user;
         }
 
-        public UserDto GetByLogin(string login)
+        public UserDto? GetByLogin(string login)
         {
             var user = userRepository.GetByLogin(login);
             return user == null ? null : MapToDto(user);

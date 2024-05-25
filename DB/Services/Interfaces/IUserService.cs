@@ -5,6 +5,6 @@ namespace DB.Services.Interfaces
 {
     public interface IUserService : IBaseService<User, UserDto, UserAddEditDto>
     {
-        UserDto GetByLogin(string login);
+        UserDto? GetByLogin(string login);
     }
 }

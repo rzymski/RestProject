@@ -7,7 +7,8 @@ namespace DB.Dto.Base
         [Required]
         public int Id { get; set; }
 
-        public BaseIdDto(){}
+        public BaseIdDto() { }
+
         public BaseIdDto(int id)
         {
             Id = id;

@@ -5,6 +5,8 @@ namespace DB.Dto.Base
 {
     public abstract class BaseDto
     {
+        public BaseDto() { }
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();

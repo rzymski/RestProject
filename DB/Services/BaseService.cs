@@ -63,13 +63,13 @@ namespace DB.Services.Interfaces
         }
 
         // Metoda do mapowania encji na DTO
-        protected virtual TDto MapToDto(T entity)
+        public virtual TDto MapToDto(T entity)
         {
             return new TDto();
         }
 
         // Metoda do mapowania DTO na encję
-        protected virtual T MapAddEditDtoToEntity(TAddEditDto addEditDto, T entity = null)
+        public virtual T MapAddEditDtoToEntity(TAddEditDto addEditDto, T? entity = null)
         {
             if (entity == null)
                 entity = Activator.CreateInstance<T>(); // Utwórz nową instancję encji, jeśli nie została dostarczona

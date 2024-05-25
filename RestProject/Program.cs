@@ -15,6 +15,7 @@ builder.Services.AddScoped(typeof(IFlightReservationRepository), typeof(FlightRe
 builder.Services.AddScoped(typeof(IBaseService<,,>), typeof(BaseService<,,>));
 builder.Services.AddScoped(typeof(IFlightService), typeof(FlightService));
 builder.Services.AddScoped(typeof(IUserService), typeof(UserService));
+builder.Services.AddScoped(typeof(IFlightReservationService), typeof(FlightReservationService));
 
 builder.Services.AddDbContext<MyDBContext>(options =>
 {
