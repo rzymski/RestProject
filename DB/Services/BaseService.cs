@@ -12,7 +12,7 @@ namespace DB.Services.Interfaces
             this.baseRepository = repository;
         }
 
-        public TDto GetByIdDtoObject(int id)
+        public TDto? GetByIdDtoObject(int id)
         {
             var item = baseRepository.GetById(id);
             if (item == null)

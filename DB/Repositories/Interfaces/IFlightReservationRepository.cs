@@ -4,5 +4,6 @@ namespace DB.Repositories.Interfaces
 {
     public interface IFlightReservationRepository : IBaseRepository<FlightReservation>
     {
+        void ChangeNumberOfReservedSeats(int id, short NumberOfReservedSeats);
     }
 }

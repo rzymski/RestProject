@@ -60,7 +60,6 @@ namespace RestProject.Controllers
             }
         }
 
-
         [HttpPut("{id}")]
         public ActionResult Update([FromRoute] int id, [FromBody] UserAddEditDto user)
         {

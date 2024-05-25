@@ -18,7 +18,7 @@ namespace DB.Repositories
             return _dbContext.Set<T>().ToList();
         }
 
-        public T GetById(int id)
+        public T? GetById(int id)
         {
             return _dbContext.Set<T>().SingleOrDefault(x => x.Id == id);
         }

@@ -1,4 +1,6 @@
 ﻿using DB.Dto.Flight;
+using DB.Entities;
+using DB.Services;
 using DB.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -35,26 +37,45 @@ namespace RestProject.Controllers
         [HttpPost]
         public ActionResult Add([FromBody] FlightAddEditDto flight)
         {
-            var id = flightService.Add(flight);
-            return Ok(id);
+            try
+            {
+                var id = flightService.Add(flight);
+                return Ok(id);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost]
         public ActionResult AddList([FromBody] List<FlightAddEditDto> flights)
         {
-            var ids = flightService.AddList(flights);
-            return Ok(ids);
+            try
+            {
+                var ids = flightService.AddList(flights);
+                return Ok(ids);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
-
-
 
         [HttpPut("{id}")]
         public ActionResult Update([FromRoute] int id, [FromBody] FlightAddEditDto flight)
         {
-            var result = flightService.Update(id, flight);
-            if (result)
-                return NoContent();
-            return NotFound();
+            try
+            {
+                var result = flightService.Update(id, flight);
+                if (result)
+                    return NoContent();
+                return NotFound();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpDelete("{id}")]
@@ -67,9 +88,9 @@ namespace RestProject.Controllers
         }
 
         [HttpGet]
-        public ActionResult<string> GetByValues([FromQuery] string? departureAirport, [FromQuery] string? destinationAirport, [FromQuery] DateTime? departureTime, [FromQuery] DateTime? arrivalTime)
+        public ActionResult<string> GetByValues([FromQuery] string? departureAirport, [FromQuery] string? destinationAirport, [FromQuery] DateTime? departureTime, [FromQuery] DateTime? arrivalTime, [FromQuery] short? capacity)
         {
-            return Ok(flightService.GetByParameters(departureAirport, destinationAirport, departureTime, arrivalTime));
+            return Ok(flightService.GetByParameters(departureAirport, destinationAirport, departureTime, arrivalTime, capacity));
         }
     }
 }

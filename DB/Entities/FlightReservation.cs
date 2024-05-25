@@ -12,7 +12,7 @@ namespace DB.Entities
         [ForeignKey("UserId")]
         public User User { get; set; }
 
-        public long NumberOfReservedSeats {  get; set; }
+        public short NumberOfReservedSeats {  get; set; }
 
         public override string ToString()
         {

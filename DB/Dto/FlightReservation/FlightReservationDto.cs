@@ -6,15 +6,15 @@ namespace DB.Dto.FlightReservation
 {
     public class FlightReservationDto : BaseIdDto
     {
-        public FlightDto FlightDto { get; set; }
-        public UserDto UserDto { get; set; }
-        public long NumberOfReservedSeats { get; set; }
+        public int FlightId { get; set; }
+        public int UserId { get; set; }
+        public short NumberOfReservedSeats { get; set; }
 
         public FlightReservationDto() { }
-        public FlightReservationDto(int id, FlightDto FlightDto, UserDto UserDto, long NumberOfReservedSeats) : base(id)
+        public FlightReservationDto(int id, int FlightId, int UserId, short NumberOfReservedSeats) : base(id)
         {
-            this.FlightDto = FlightDto;
-            this.UserDto = UserDto;
+            this.FlightId = FlightId;
+            this.UserId = UserId;
             this.NumberOfReservedSeats = NumberOfReservedSeats;
         }
 

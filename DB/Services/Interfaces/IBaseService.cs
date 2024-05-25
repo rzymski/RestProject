@@ -4,7 +4,7 @@ namespace DB.Services.Interfaces
 {
     public interface IBaseService<T, TDto, TAddEditDto> where T : BaseEntity where TDto : class where TAddEditDto : class
     {
-        TDto GetByIdDtoObject(int id);
+        TDto? GetByIdDtoObject(int id);
         List<TDto> GetAllDtoList();
         bool Delete(int id);
         int Add(TAddEditDto item);

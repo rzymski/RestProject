@@ -28,6 +28,7 @@ namespace DB
 
             modelBuilder.Entity<Flight>().HasKey(f => f.Id);
             modelBuilder.Entity<Flight>().Property(f => f.Id).HasDefaultValueSql("NEXT VALUE FOR shared.EntitySeq");
+            modelBuilder.Entity<Flight>().HasIndex(f => f.FlightCode).IsUnique();
 
             modelBuilder.Entity<User>().HasKey(u => u.Id);
             modelBuilder.Entity<User>().Property(u => u.Id).HasDefaultValueSql("NEXT VALUE FOR shared.EntitySeq");

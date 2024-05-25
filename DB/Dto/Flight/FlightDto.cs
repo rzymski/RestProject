@@ -9,10 +9,10 @@ namespace DB.Dto.Flight
         public DateTime DepartureTime { get; set; }
         public string DestinationAirport { get; set; }
         public DateTime ArrivalTime { get; set; }
-        public long Capacity { get; set; }
+        public short Capacity { get; set; }
 
         public FlightDto() { }
-        public FlightDto(int id, string flightCode, string departureAirport, DateTime departureTime, string destinationAirport, DateTime arrivalTime, long capacity) : base(id)
+        public FlightDto(int id, string flightCode, string departureAirport, DateTime departureTime, string destinationAirport, DateTime arrivalTime, short capacity) : base(id)
         {
             this.FlightCode = flightCode;
             this.DepartureAirport = departureAirport;

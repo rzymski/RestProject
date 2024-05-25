@@ -41,12 +41,13 @@ namespace DB.Services
             return flight;
         }
 
-        public List<FlightDto> GetByParameters(string? departureAirport, string? destinationAirport, DateTime? departureTime, DateTime? arrivalTime)
+        public List<FlightDto> GetByParameters(string? departureAirport, string? destinationAirport, DateTime? departureTime, DateTime? arrivalTime, short? capacity)
         {
             var results = baseRepository.GetAll().Where(p =>    (string.IsNullOrEmpty(departureAirport) || p.DepartureAirport.Equals(departureAirport, StringComparison.OrdinalIgnoreCase)) &&
                                                             (string.IsNullOrEmpty(destinationAirport) || p.DestinationAirport.Equals(destinationAirport, StringComparison.OrdinalIgnoreCase)) &&
                                                             (!departureTime.HasValue || p.DepartureTime == departureTime) &&
-                                                            (!arrivalTime.HasValue || p.ArrivalTime == arrivalTime)).Select(MapToDto).ToList();
+                                                            (!arrivalTime.HasValue || p.ArrivalTime == arrivalTime) &&
+                                                            (!capacity.HasValue || p.Capacity == capacity)).Select(MapToDto).ToList();
             return results;
         }
     }

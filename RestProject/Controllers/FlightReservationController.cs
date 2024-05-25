@@ -48,8 +48,6 @@ namespace RestProject.Controllers
             return Ok(ids);
         }
 
-
-
         [HttpPut("{id}")]
         public ActionResult Update([FromRoute] int id, [FromBody] FlightReservationAddEditDto flightReservation)
         {
@@ -68,10 +66,19 @@ namespace RestProject.Controllers
             return NotFound();
         }
 
-        [HttpGet]
-        public ActionResult<string> GetByValues([FromQuery] FlightAddEditDto? flightAddEditDto, [FromQuery] UserAddEditDto? userAddEditDto, [FromQuery] long? numberOfReservedSeats)
+        [HttpPut("{id}")]
+        public ActionResult ChangeNumberOfReservedSeats([FromRoute] int id, [FromBody] short numberOfReservedSeats)
         {
-            return Ok(flightReservationService.GetByParameters(flightAddEditDto, userAddEditDto, numberOfReservedSeats));
+            var result = flightReservationService.ChangeNumberOfReservedSeats(id, numberOfReservedSeats);
+            if (result)
+                return NoContent();
+            return NotFound();
+        }
+
+        [HttpGet]
+        public ActionResult<string> GetByValues([FromQuery] int? flightId, [FromQuery] int? userId, [FromQuery] short? numberOfReservedSeats)
+        {
+            return Ok(flightReservationService.GetByParameters(flightId, userId, numberOfReservedSeats));
         }
     }
 }

@@ -7,7 +7,7 @@
         public DateTime DepartureTime { get; set; }
         public string DestinationAirport { get; set; }
         public DateTime ArrivalTime { get; set; }
-        public long Capacity { get; set; }
+        public short Capacity { get; set; }
 
         public ICollection<FlightReservation> FlightReservations { get; set; }
 
