@@ -23,13 +23,13 @@ namespace DB.Services
             return new FlightReservationDto
             {
                 Id = flightReservation.Id,
-                FlightId = flightReservation.FlightId.Value,
-                UserId = flightReservation.UserId.Value,
+                FlightId = flightReservation.FlightId,
+                UserId = flightReservation.UserId,
                 NumberOfReservedSeats = flightReservation.NumberOfReservedSeats
             };
         }
 
-        public override FlightReservation MapAddEditDtoToEntity(FlightReservationAddEditDto dto, FlightReservation flightReservation)
+        public override FlightReservation MapAddEditDtoToEntity(FlightReservationAddEditDto dto, FlightReservation? flightReservation)
         {
             if (flightReservation == null)
                 flightReservation = new FlightReservation();

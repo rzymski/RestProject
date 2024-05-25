@@ -9,7 +9,7 @@ namespace DB.Repositories
     {
         public UserRepository(MyDBContext dbContext) : base(dbContext) {}
 
-        public User GetByLogin(string login)
+        public User? GetByLogin(string login)
         {
             return _dbContext.Set<User>().SingleOrDefault(u => u.Login == login);
         }

@@ -4,6 +4,6 @@ namespace DB.Repositories.Interfaces
 {
     public interface IUserRepository : IBaseRepository<User>
     {
-        User GetByLogin(string login);
+        User? GetByLogin(string login);
     }
 }

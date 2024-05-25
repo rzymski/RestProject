@@ -4,13 +4,13 @@ namespace DB.Entities
 {
     public class FlightReservation : BaseEntity
     {
-        public int? FlightId { get; set; }
+        public int FlightId { get; set; }
         [ForeignKey("FlightId")]
-        public Flight Flight { get; set; }
+        public Flight Flight { get; set; } = null!;
 
-        public int? UserId { get; set; }
+        public int UserId { get; set; }
         [ForeignKey("UserId")]
-        public User User { get; set; }
+        public User User { get; set; } = null!;
 
         public short NumberOfReservedSeats {  get; set; }
 
