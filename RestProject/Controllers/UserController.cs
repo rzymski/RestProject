@@ -22,7 +22,7 @@ namespace RestProject.Controllers
         {
             var result = userService.GetByIdDtoObject(id);
             if (result == null)
-                return NotFound(new { user = $"Nie znaleziono rekordu o id = {id}." });
+                return NotFound(new { user = $"User not found with id = {id}." });
             return Ok(result);
         }
 

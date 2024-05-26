@@ -1,6 +1,8 @@
 ﻿using DB.Dto.Flight;
 using DB.Dto.FlightReservation;
 using DB.Dto.User;
+using DB.Entities;
+using DB.Services;
 using DB.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,7 +26,7 @@ namespace RestProject.Controllers
         {
             var result = flightReservationService.GetByIdDtoObject(id);
             if (result == null)
-                return NotFound(new { flightReservation = $"Nie znaleziono rekordu o id = {id}." });
+                return NotFound(new { flightReservation = $"FlightReservation not found with id = {id}." });
             return Ok(result);
         }
 
@@ -37,24 +39,45 @@ namespace RestProject.Controllers
         [HttpPost]
         public ActionResult Add([FromBody] FlightReservationAddEditDto flightReservation)
         {
-            var id = flightReservationService.Add(flightReservation);
-            return Ok(id);
+            try
+            {
+                var id = flightReservationService.Add(flightReservation);
+                return Ok(id);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost]
         public ActionResult AddList([FromBody] List<FlightReservationAddEditDto> flightReservations)
         {
-            var ids = flightReservationService.AddList(flightReservations);
-            return Ok(ids);
+            try
+            {
+                var ids = flightReservationService.AddList(flightReservations);
+                return Ok(ids);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut("{id}")]
         public ActionResult Update([FromRoute] int id, [FromBody] FlightReservationAddEditDto flightReservation)
         {
-            var result = flightReservationService.Update(id, flightReservation);
-            if (result)
-                return NoContent();
-            return NotFound();
+            try
+            {
+                var result = flightReservationService.Update(id, flightReservation);
+                if (result)
+                    return NoContent();
+                return NotFound();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpDelete("{id}")]
@@ -66,13 +89,20 @@ namespace RestProject.Controllers
             return NotFound();
         }
 
-        [HttpPut("{id}")]
+        [HttpPatch("{id}")]
         public ActionResult ChangeNumberOfReservedSeats([FromRoute] int id, [FromBody] short numberOfReservedSeats)
         {
-            var result = flightReservationService.ChangeNumberOfReservedSeats(id, numberOfReservedSeats);
-            if (result)
-                return NoContent();
-            return NotFound();
+            try
+            {
+                var result = flightReservationService.ChangeNumberOfReservedSeats(id, numberOfReservedSeats);
+                if (result)
+                    return NoContent();
+                return NotFound();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet]

@@ -36,9 +36,29 @@ namespace DB
 
             modelBuilder.Entity<FlightReservation>().HasKey(fr => fr.Id);
             modelBuilder.Entity<FlightReservation>().Property(fr => fr.Id).HasDefaultValueSql("NEXT VALUE FOR shared.EntitySeq");
+            modelBuilder.Entity<FlightReservation>().HasIndex(fr => new { fr.FlightId, fr.UserId }).IsUnique();
 
             modelBuilder.Entity<FlightReservation>().HasOne(fr => fr.Flight).WithMany(f => f.FlightReservations).HasForeignKey(fr => fr.FlightId).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<FlightReservation>().HasOne(fr => fr.User).WithMany(u => u.FlightReservations).HasForeignKey(fr => fr.UserId).OnDelete(DeleteBehavior.Cascade); 
+        }
+
+        public override int SaveChanges(bool acceptAllChangesOnSuccess)
+        {
+            if (ChangeTracker.Entries<FlightReservation>().Any(e => e.State == EntityState.Added || e.State == EntityState.Modified))
+                ValidateReservations();
+            return base.SaveChanges(acceptAllChangesOnSuccess);
+        }
+
+        private void ValidateReservations()
+        {
+            var flightReservations = ChangeTracker.Entries<FlightReservation>().Where(e => e.State == EntityState.Added || e.State == EntityState.Modified).Select(e => e.Entity).ToList();
+            foreach (var reservation in flightReservations)
+            {
+                var totalReservedSeats = FlightReservations.Where(fr => fr.FlightId == reservation.FlightId && fr.Id != reservation.Id).Sum(fr => fr.NumberOfReservedSeats) + reservation.NumberOfReservedSeats;
+                var flight = Flights.Single(f => f.Id == reservation.FlightId);
+                if (totalReservedSeats > flight.Capacity)
+                    throw new InvalidOperationException($"Can't reserve {reservation.NumberOfReservedSeats} seats for flight with ID {reservation.FlightId}. It's only {flight.Capacity - (totalReservedSeats-reservation.NumberOfReservedSeats)} free seats from all {flight.Capacity} seats.");
+            }
         }
     }
 }

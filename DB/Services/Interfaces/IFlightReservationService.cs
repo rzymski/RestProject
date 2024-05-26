@@ -8,6 +8,6 @@ namespace DB.Services.Interfaces
     public interface IFlightReservationService : IBaseService<FlightReservation, FlightReservationDto, FlightReservationAddEditDto>
     {
         bool ChangeNumberOfReservedSeats(int id, short numberOfReservedSeats);
-        List<FlightReservationDto> GetByParameters(int? flightId, int? userId, short? numberOfReservedSeats);
+        List<FlightReservationDto> GetByParameters(int? flightId, int? userId, short? numberOfReservedSeats = null);
     }
 }

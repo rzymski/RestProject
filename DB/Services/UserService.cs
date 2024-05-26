@@ -52,10 +52,10 @@ namespace DB.Services
             var existingLogins = userRepository.GetAll().Select(u => u.Login).ToList();
             var newLogins = items.Select(i => i.Login).ToList();
             var duplicateLogins = newLogins.GroupBy(x => x).Where(g => g.Count() > 1).Select(g => g.Key).ToList();
-            if (duplicateLogins.Any())
+            if (duplicateLogins.Count != 0)
                 throw new InvalidOperationException($"Duplicate logins found in the list: {string.Join(", ", duplicateLogins)}");
             var existingDuplicates = newLogins.Intersect(existingLogins).ToList();
-            if (existingDuplicates.Any())
+            if (existingDuplicates.Count != 0)
                 throw new InvalidOperationException($"Users with these logins already exist: {string.Join(", ", existingDuplicates)}");
             return base.AddList(items);
         }

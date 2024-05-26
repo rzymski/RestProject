@@ -24,7 +24,7 @@ namespace RestProject.Controllers
         {
             var result = flightService.GetByIdDtoObject(id);
             if (result == null)
-                return NotFound(new { flight = $"Nie znaleziono rekordu o id = {id}." });
+                return NotFound(new { flight = $"Flight not found with id = {id}." });
             return Ok(result);
         }
 
