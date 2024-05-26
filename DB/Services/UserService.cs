@@ -1,4 +1,5 @@
-﻿using DB.Dto.User;
+﻿using DB.Dto.Flight;
+using DB.Dto.User;
 using DB.Entities;
 using DB.Repositories.Interfaces;
 using DB.Services.Interfaces;
@@ -66,6 +67,14 @@ namespace DB.Services
             if (existingUser != null && existingUser.Id != id)
                 throw new InvalidOperationException("Another user with this login already exists.");
             return base.Update(id, item);
+        }
+
+        public List<UserDto> GetByParameters(string? login, string? password, string? email = null)
+        {
+            var results = baseRepository.GetAll().Where(p => (string.IsNullOrEmpty(login) || p.Login.Equals(login)) &&
+                                                            (string.IsNullOrEmpty(password) || p.Password.Equals(password)) &&
+                                                            (string.IsNullOrEmpty(email) || p.Password.Equals(email))).Select(MapToDto).ToList();
+            return results;
         }
     }
 }

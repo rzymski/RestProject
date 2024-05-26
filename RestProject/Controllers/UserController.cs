@@ -18,7 +18,7 @@ namespace RestProject.Controllers
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetOne([FromRoute] int id)
+        public ActionResult GetOne([FromRoute] int id)
         {
             var result = userService.GetByIdDtoObject(id);
             if (result == null)

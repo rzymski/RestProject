@@ -8,7 +8,11 @@ namespace DB.Services
 {
     public class FlightService : BaseService<Flight, FlightDto, FlightAddEditDto>, IFlightService
     {
-        public FlightService(IFlightRepository repository) : base(repository) {}
+        private readonly IFlightRepository flightRepository;
+        public FlightService(IFlightRepository repository) : base(repository) 
+        {
+            this.flightRepository = repository;
+        }
 
         public override FlightDto MapToDto(Flight flight)
         {
@@ -49,6 +53,19 @@ namespace DB.Services
                                                             (!arrivalTime.HasValue || p.ArrivalTime == arrivalTime) &&
                                                             (!capacity.HasValue || p.Capacity == capacity)).Select(MapToDto).ToList();
             return results;
+        }
+
+        public List<string> GetAllAirports()
+        {
+            return flightRepository.GetAllAirports();
+        }
+
+        public int GetFlightAvailableSeats(int flightId)
+        {
+            Flight? flight = flightRepository.GetById(flightId);
+            if(flight == null)
+                throw new InvalidOperationException($"Flight with id = {flightId} does not exist.");
+            return flightRepository.GetFlightAvailableSeats(flightId);
         }
     }
 }
