@@ -1,12 +1,9 @@
 ﻿using DB.Dto.Flight;
 using DB.Dto.FlightReservation;
 using DB.Dto.User;
-using DB.Entities;
-using DB.Services;
 using DB.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using RestProject.pdfGenerator;
-using System.Diagnostics;
 
 namespace RestProject.Controllers
 {
