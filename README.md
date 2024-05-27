@@ -8,7 +8,7 @@ ___
 3. :wrench: [Konfiguracja serwera](#instrukcja-konfiguracji-serwera)
 4. :dragon: [Konfiguracja klienta w pythonie](#instrukcja-konfiguracji-klienta)
 5. :lock: [Konfiguracja certifikatu SSL dla klienta](#instrukcja-konfiguracji-certifikatu-ssl-dla-klienta-w-pythonie)
-6. :satellite: [Modyfikowanie bazy danych](#użycie-skryptu-pythonowego-do-modyfikowania-bazy-danych)
+6. :satellite: [Modyfikowanie bazy danych](#uzycie-skryptu-pythonowego-do-modyfikowania-bazy-danych)
 7. :eyes: [Monitorowanie requestów](#instrukcja-monitorowania-requestów)
 8. :file_folder: [Struktura projektu](#struktura-projektu)
 9. :white_check_mark: [Wskazówki](#wskazówki-użycia)
@@ -21,6 +21,18 @@ ___
 3) [ ] Kupno biletu
 4) [ ] Odbiór potwierdzenia kupna w formacie PDF
 5) [ ] Sprawdzenie rezerwacji na podstawie podanego numeru
+
+# Działanie Serwera
+Można sprawdzić działanie serwera w:  
+- https://localhost:8080/nameOfTheSelectedService/{optionalPathParameter}
+
+SWAGGER:  
+- https://localhost:8080/swagger/index.html
+
+Klient pythonowy znajduje się w folderze pythonClient:
+
+W postmanie importując dane z:  
+- https://localhost:8080/swagger/v1/swagger.json
 
 # Instrukcja konfiguracji serwera
 <details>
@@ -101,3 +113,5 @@ Wymaga Windows Powershell i OpenSSL
   Po wpisaniu polecenia należy podać wcześniej wybrane hasło w tym przykładzie było to twojeDowolneHaslo
 </details>
 
+# Użycie skryptu pythonowego do modyfikowania bazy danych
+Skrypt pythonowy znajduje się w pliku <b><code>createFlights.py</code></b> w folderze <b>pythonClient</b>

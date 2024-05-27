@@ -11,6 +11,7 @@ class AirportClient:
         self.certificate = certificate
         self.username = username
         self.password = password
+        self.responseHeaders = {}
 
     @staticmethod
     def printRequest(request):
@@ -47,7 +48,8 @@ class AirportClient:
                 json=json,  # Używany do wysyłania danych jako JSON
                 verify=self.certificate
             )
-            AirportClient.printRequest(requestResponse.request)  # Wyswietlanie danych wyslanego requesta
+            self.responseHeaders = AirportClient.getHeadersFromResponse(requestResponse, ("userValidation",))
+            # AirportClient.printRequest(requestResponse.request)  # Wyswietlanie danych wyslanego requesta
             requestResponse.raise_for_status()
             if expectedResponseFormat.lower() == "json":
                 return requestResponse.json() if requestResponse.text else None
@@ -84,20 +86,30 @@ class AirportClient:
                 print("Zapis pliku został anulowany.")
         root.destroy()
 
+    @staticmethod
+    def getHeadersFromResponse(serviceResponse, headerNames):
+        headers = {}
+        for headerName in headerNames:
+            if headerName in serviceResponse.headers:
+                headers.update({headerName: serviceResponse.headers[headerName]})
+        return headers
+
 
 if __name__ == "__main__":
     client = AirportClient("localhost", 8080, "Airport", certificate="certificate.pem")
-    client.setUser("adminUser", "pass")
+    # client.setUser("adminUser", "pass")
 
-    # response = client.service("GetFlightById", "GET", pathParameter="100")
+    response = client.service("GetFlightById", "GET", pathParameter="100")
     # response = client.service("GetAllQualifyingFlights", "GET", parameters={"departureAirport": "Tokyo", "destinationAirport": "warsaw", "departureStartDateRange": "2024-05-18T00:00:00", "departureEndDateRange": "2024-05-21T00:00:00"})
     # client.generatePDF(2652)
     # response = client.service("GetAvailableAirports", "GET", expectedResponseFormat="text")
     # response = client.service("CreateUser", "POST", json={"login": "adminUser", "password": "pass", "email": "email@wp.pl"})
-    response = client.service("ReserveFlight", "POST", pathParameter="888", json=8)
+    # response = client.service("ReserveFlight", "POST", pathParameter="888", json=8)
     # response = client.service("CheckFlightReservation", "GET", pathParameter="2752")
     # response = client.service("CancelFlightReservation", "DELETE", pathParameter="2752")
-    # response = client.service("CancelUserReservationInConcreteFlight", "DELETE", pathParameter="1700", headers={"username": "adminUser", "password": "pass"})
+    # response = client.service("CancelUserReservationInConcreteFlight", "DELETE", pathParameter="1700")
     # response = client.service("GetUserReservations", "GET", pathParameter="adminUser")
     # response = client.service("GetFlightAvailableSeats", "GET", pathParameter="1700")
+
+    ic(client.responseHeaders)
 
