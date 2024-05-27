@@ -1,4 +1,6 @@
-﻿using DB.Services.Interfaces;
+﻿using DB.Dto.User;
+using DB.Entities;
+using DB.Services.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 
 namespace RestProject.Middleware
@@ -17,15 +19,21 @@ namespace RestProject.Middleware
             IUserService _userService = userService;
             var username = context.Request.Headers["username"].FirstOrDefault();
             var password = context.Request.Headers["password"].FirstOrDefault();
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+
+            if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password)) 
             {
-                context.Response.Headers["userValidation"] = false.ToString();
-            } 
-            else
-            {
-                var userExists = _userService.GetByParameters(username, password).Count != 0;
-                context.Response.Headers["userValidation"] = userExists.ToString();
+                UserDto? user = _userService.GetByParameters(username, password).FirstOrDefault();
+                if (user != null)
+                {
+                    context.Response.Headers["userValidation"] = true.ToString();
+                    context.Items["CurrentUser"] = user;
+                    await _next(context);
+                    return;
+                }
             }
+
+            context.Response.Headers["userValidation"] = false.ToString();
+            context.Items["CurrentUser"] = null;
             await _next(context);
         }
     }

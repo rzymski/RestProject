@@ -24,19 +24,6 @@ namespace RestProject.Controllers
             this.userService = userService;
         }
 
-        private UserDto? AuthenticateUser(string username, string password)
-        {
-            return userService.GetByParameters(username, password).SingleOrDefault();
-        }
-
-        [HttpPost]
-        public ActionResult<string> Echo([FromHeader] string username, [FromBody] string text)
-        {
-            Response.Headers["usernameExist"] = (userService.GetByLogin(username) != null).ToString();
-            return Ok($"Serwer zwraca otrzymany text: {text}");
-        }
-
-
         [HttpGet]
         public ActionResult<List<FlightDto>> GetFlightsData()
         {
@@ -77,7 +64,7 @@ namespace RestProject.Controllers
         [HttpPost("{flightId}")]
         public ActionResult ReserveFlight([FromRoute] int flightId, [FromBody] short numberOfReservedSeats, [FromHeader] string username, [FromHeader] string password)
         {
-            var user = AuthenticateUser(username, password);
+            UserDto? user = HttpContext.Items["CurrentUser"] as UserDto;
             if (user == null)
                 return NotFound($"Not found user with username: {username} and given password");
             Console.WriteLine($"Wywolano z flightId = {flightId} i numSeats = {numberOfReservedSeats}");
@@ -103,7 +90,7 @@ namespace RestProject.Controllers
         [HttpDelete("{flightId}")]
         public ActionResult CancelUserReservationInConcreteFlight([FromRoute] int flightId, [FromHeader] string username, [FromHeader] string password)
         {
-            var user = AuthenticateUser(username, password);
+            UserDto? user = HttpContext.Items["CurrentUser"] as UserDto;
             if (user == null)
                 return NotFound($"Not found user with username: {username} and given password");
             var flightReservation = flightReservationService.GetByParameters(flightId, user.Id).SingleOrDefault();
@@ -226,6 +213,13 @@ namespace RestProject.Controllers
             byte[] pdfBytes = await pdfGenerator.GenerateAsync();
 
             return File(pdfBytes, "application/pdf", "Reservation.pdf");
+        }
+
+        [HttpPost]
+        public ActionResult<string> Echo([FromHeader] string username, [FromBody] string text)
+        {
+            Response.Headers["usernameExist"] = (userService.GetByLogin(username) != null).ToString();
+            return Ok($"Serwer zwraca otrzymany text: {text}");
         }
     }
 }
