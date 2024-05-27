@@ -110,5 +110,32 @@ namespace RestProject.Controllers
         {
             return Ok(flightReservationService.GetByParameters(flightId, userId, numberOfReservedSeats));
         }
+
+        [HttpGet("{id}")]
+        public ActionResult GetFlightReservationAllData([FromRoute] int id)
+        {
+            try
+            {
+                return Ok(flightReservationService.GetByIdAllFieldsDtoObject(id));
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult> GetAsynchronouslyFlightReservationAllDataAsync([FromRoute] int id)
+        {
+            try
+            {
+                var result = await Task.Run(() => flightReservationService.GetByIdAllFieldsDtoObject(id));
+                return Ok(result);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

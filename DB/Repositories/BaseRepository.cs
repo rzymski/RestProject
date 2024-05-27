@@ -23,6 +23,11 @@ namespace DB.Repositories
             return _dbContext.Set<T>().SingleOrDefault(x => x.Id == id);
         }
 
+        public async Task<T?> GetByIdAsync(int id)
+        {
+            return await _dbContext.Set<T>().SingleOrDefaultAsync(x => x.Id == id);
+        }
+
         public void Add(T entity)
         {
             _dbContext.Set<T>().Add(entity);

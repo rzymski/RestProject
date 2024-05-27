@@ -4,6 +4,7 @@
     {
         List<T> GetAll();
         T? GetById(int id);
+        Task<T?> GetByIdAsync(int id);
         void Add(T entity);
         void AddList(List<T> entities);
         void Update(T entity);

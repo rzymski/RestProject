@@ -20,7 +20,7 @@ class AirportClient:
     def printService(func):
         def wrapper(self, serviceName, serviceMethod, *args, **kwargs):
             serviceResponse = func(self, serviceName, serviceMethod, *args, **kwargs)
-            if serviceName == "generatePDF":
+            if "generatePDF" in serviceName:
                 ic(serviceName, serviceMethod, args, kwargs)
             else:
                 ic(serviceName, serviceMethod, args, kwargs, serviceResponse)
@@ -61,7 +61,7 @@ class AirportClient:
             return None
 
     def generatePDF(self, reservationID):
-        pdfBytes = self.service("generatePDF", "GET", str(reservationID), expectedResponseFormat="binary")
+        pdfBytes = self.service("generatePDFAsynchronously", "GET", str(reservationID), expectedResponseFormat="binary")
         root = tk.Tk()
         root.withdraw()
         if pdfBytes:
@@ -80,5 +80,6 @@ class AirportClient:
 
 if __name__ == "__main__":
     client = AirportClient("https://localhost:8080/AirPort", certificate="certificate.pem")
-    response = client.service("GetFlightById", "GET", pathParameter="100")
-    client.generatePDF(2652)
+    # response = client.service("GetFlightById", "GET", pathParameter="100")
+    # response = client.service("GetAllQualifyingFlights", "GET", parameters={"departureAirport": "Tokyo", "destinationAirport": "warsaw", "departureStartDateRange": "2024-05-18T00:00:00", "departureEndDateRange": "2024-05-21T00:00:00"})
+    # client.generatePDF(2652)

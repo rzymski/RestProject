@@ -111,4 +111,75 @@ public class PdfGenerator
             return memoryStream.ToArray();
         }
     }
+
+    public async Task<byte[]> GenerateAsync()
+    {
+        using (var memoryStream = new MemoryStream())
+        {
+            PdfWriter writer = new PdfWriter(memoryStream);
+            PdfDocument pdfDocument = new PdfDocument(writer);
+
+            if (isHeaderFooter)
+            {
+                pdfDocument.AddEventHandler(PdfDocumentEvent.END_PAGE, new HeaderFooterEventHandler(headerText, footerText));
+            }
+
+            pdfDocument.SetDefaultPageSize(PageSize.A4);
+            Document document = new Document(pdfDocument);
+
+            float col = 280f;
+            float[] columnWidth = { col, col };
+
+            Table table = new Table(columnWidth)
+                .SetBackgroundColor(new DeviceRgb(63, 169, 219))
+                .SetFontColor(ColorConstants.WHITE);
+
+            table.AddCell(new Cell()
+                .Add(new Paragraph("Reservation"))
+                .SetTextAlignment(TextAlignment.CENTER)
+                .SetVerticalAlignment(VerticalAlignment.MIDDLE)
+                .SetMarginTop(30f)
+                .SetMarginBottom(30f)
+                .SetFontSize(30f)
+                .SetBorder(Border.NO_BORDER));
+
+            table.AddCell(new Cell()
+                .Add(new Paragraph("Reservation number: " + reservation.ReservationId + "\n" +
+                                   "Current reservations count: " + reservation.NumberOfReservedSeats))
+                .SetTextAlignment(TextAlignment.RIGHT)
+                .SetMarginTop(30f)
+                .SetMarginBottom(30f)
+                .SetMarginRight(10f)
+                .SetBorder(Border.NO_BORDER));
+
+            Text text = new Text("Your data\n").SetFontSize(17).SetBold();
+            Paragraph userDataHeader = new Paragraph(text).SetMarginTop(25f);
+            Paragraph userData = new Paragraph("Login: " + reservation.Login + "\n" +
+                                               "E-mail: " + reservation.Email + "\n");
+
+            Text text2 = new Text("Flight " + reservation.FlightCode).SetFontSize(17).SetBold();
+            Paragraph flightDataHeader = new Paragraph(text2);
+            Paragraph flightData = new Paragraph("Departure: " + reservation.DepartureAirport + " at " + reservation.DepartureTime + "  ----->  " +
+                                                 "Destination: " + reservation.DestinationAirport + " at " + reservation.ArrivalTime);
+
+            document.Add(table);
+            document.Add(userDataHeader);
+            document.Add(userData);
+            document.Add(flightDataHeader);
+            document.Add(flightData);
+
+            if (isImage)
+            {
+                ImageData imageData = await Task.Run(() => ImageDataFactory.Create(imagePath));
+                iText.Layout.Element.Image image = new iText.Layout.Element.Image(imageData);
+                image.SetFixedPosition(pdfDocument.GetDefaultPageSize().GetWidth() / 2 - 320, pdfDocument.GetDefaultPageSize().GetHeight() / 2 - 160);
+                image.SetOpacity(0.3f);
+                document.Add(image);
+            }
+            document.Close();
+            writer.Close();
+            return memoryStream.ToArray();
+        }
+    }
+
 }

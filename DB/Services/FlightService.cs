@@ -67,5 +67,14 @@ namespace DB.Services
                 throw new InvalidOperationException($"Flight with id = {flightId} does not exist.");
             return flightRepository.GetFlightAvailableSeats(flightId);
         }
+
+        public List<FlightDto> GetAllQualifyingFlights(string? departureAirport, string? destinationAirport, DateTime? departureStartDateRange, DateTime? departureEndDateRange)
+        {
+            var results = baseRepository.GetAll().Where(p =>    (string.IsNullOrEmpty(departureAirport) || p.DepartureAirport.Equals(departureAirport, StringComparison.OrdinalIgnoreCase)) &&
+                                                            (string.IsNullOrEmpty(destinationAirport) || p.DestinationAirport.Equals(destinationAirport, StringComparison.OrdinalIgnoreCase)) &&
+                                                            (!departureStartDateRange.HasValue || p.DepartureTime >= departureStartDateRange) &&
+                                                            (!departureEndDateRange.HasValue || p.DepartureTime <= departureEndDateRange)).Select(MapToDto).ToList();
+            return results;
+        }
     }
 }

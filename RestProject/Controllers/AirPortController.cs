@@ -6,6 +6,7 @@ using DB.Services;
 using DB.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using RestProject.pdfGenerator;
+using System.Diagnostics;
 
 namespace RestProject.Controllers
 {
@@ -26,7 +27,7 @@ namespace RestProject.Controllers
             this.userService = userService;
         }
 
-        private UserDto? authenticateUser(string username, string password)
+        private UserDto? AuthenticateUser(string username, string password)
         {
             return userService.GetByParameters(username, password).SingleOrDefault();
         }
@@ -39,9 +40,9 @@ namespace RestProject.Controllers
         }
 
         [HttpGet]
-        public ActionResult<string> GetAllFlightsWithParameterss([FromQuery] string? departureAirport, [FromQuery] string? destinationAirport, [FromQuery] DateTime? departureTime, [FromQuery] DateTime? arrivalTime, [FromQuery] short? capacity)
+        public ActionResult<string> GetAllQualifyingFlights([FromQuery] string? departureAirport, [FromQuery] string? destinationAirport, [FromQuery] DateTime? departureStartDateRange, [FromQuery] DateTime? departureEndDateRange)
         {
-            return Ok(flightService.GetByParameters(departureAirport, destinationAirport, departureTime, arrivalTime, capacity));
+            return Ok(flightService.GetAllQualifyingFlights(departureAirport, destinationAirport, departureStartDateRange, departureEndDateRange));
         }
 
         [HttpGet]
@@ -72,7 +73,7 @@ namespace RestProject.Controllers
         [HttpPost("{flightId}")]
         public ActionResult ReserveFlight([FromRoute] int flightId, [FromBody] short numberOfReservedSeats, [FromHeader] string username, [FromHeader] string password)
         {
-            var user = authenticateUser(username, password);
+            var user = AuthenticateUser(username, password);
             if (user == null)
                 return NotFound($"Not found user with username: {username} and given password");
             Console.WriteLine($"Wywolano z flightId = {flightId} i numSeats = {numberOfReservedSeats}");
@@ -98,7 +99,7 @@ namespace RestProject.Controllers
         [HttpDelete]
         public ActionResult CancelUserReservationInConcreteFlight([FromRoute] int flightId, [FromHeader] string username, [FromHeader] string password)
         {
-            var user = authenticateUser(username, password);
+            var user = AuthenticateUser(username, password);
             if (user == null)
                 return NotFound($"Not found user with username: {username} and given password");
             var flightReservation = flightReservationService.GetByParameters(flightId, user.Id).SingleOrDefault();
@@ -186,31 +187,41 @@ namespace RestProject.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult GetFlightReservationAllData([FromRoute] int id)
+        public async Task<ActionResult> GeneratePDFAsynchronouslyAsync([FromRoute] int id)
         {
-            try
-            {
-                return Ok(flightReservationService.GetByIdAllFieldsDtoObject(id));
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+            var fr = await flightReservationService.GetByIdDtoObjectAsync(id);
+            if (fr == null)
+                return NotFound($"Not found flight reservation with id = {id}");
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult> GetAsynchronouslyFlightReservationAllDataAsync([FromRoute] int id)
-        {
-            try
-            {
-                var result = await Task.Run(() => flightReservationService.GetByIdAllFieldsDtoObject(id));
-                return Ok(result);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+            var f = await flightService.GetByIdDtoObjectAsync(fr.FlightId);
+            var u = await userService.GetByIdDtoObjectAsync(fr.UserId);
+            if (f == null || u == null)
+                return NotFound($"Flight reservation have null user = {u} or flight = {f}");
 
+            var reservation = new FlightReservationAllFieldsDto
+            {
+                ReservationId = fr.Id,
+                NumberOfReservedSeats = fr.NumberOfReservedSeats,
+
+                FlightId = f.Id,
+                FlightCode = f.FlightCode,
+                DepartureAirport = f.DepartureAirport,
+                DepartureTime = f.DepartureTime,
+                DestinationAirport = f.DestinationAirport,
+                ArrivalTime = f.ArrivalTime,
+
+                UserId = u.Id,
+                Login = u.Login,
+                Email = u.Email
+            };
+
+            var pdfGenerator = new PdfGenerator(reservation);
+            pdfGenerator.SetHeaderFooter("", ""); // brak tekstu w header-ze i footerze
+            string relativeImagePath = Path.Combine("../images", "plane.png");
+            pdfGenerator.SetImage(relativeImagePath); // Ustawienie obrazu
+            byte[] pdfBytes = await pdfGenerator.GenerateAsync();
+
+            return File(pdfBytes, "application/pdf", "Reservation.pdf");
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using DB.Repositories.Interfaces;
 using DB.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace DB.Services.Interfaces
 {
@@ -15,6 +16,15 @@ namespace DB.Services.Interfaces
         public TDto? GetByIdDtoObject(int id)
         {
             var item = baseRepository.GetById(id);
+            if (item == null)
+                return null;
+            var result = MapToDto(item); // Mapowanie encji na DTO
+            return result;
+        }
+
+        public async Task<TDto?> GetByIdDtoObjectAsync(int id)
+        {
+            var item = await baseRepository.GetByIdAsync(id);
             if (item == null)
                 return null;
             var result = MapToDto(item); // Mapowanie encji na DTO
