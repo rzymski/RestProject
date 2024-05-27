@@ -5,8 +5,8 @@ ___
 ## Zawartość REDME
 1. :airplane: [Funkcjonalność](#funkcjonalność)
 2. :computer: [Działanie serwera](#działanie-serwera)
-3. :wrench: [Konfiguracja serwera](#instrukcja-konfiguracji-serwera-w-.net)
-4. :dragon: [Konfiguracja klienta w pythonie](#instrukcja-konfiguracji-klienta-w-pythonie)
+3. :wrench: [Konfiguracja serwera](#instrukcja-konfiguracji-serwera)
+4. :dragon: [Konfiguracja klienta w pythonie](#instrukcja-konfiguracji-klienta)
 5. :lock: [Konfiguracja certifikatu SSL dla klienta](#instrukcja-konfiguracji-certifikatu-ssl-dla-klienta-w-pythonie)
 6. :satellite: [Modyfikowanie bazy danych](#użycie-skryptu-pythonowego-do-modyfikowania-bazy-danych)
 7. :eyes: [Monitorowanie requestów](#instrukcja-monitorowania-requestów)
@@ -16,13 +16,13 @@ ___
 
 # Funkcjonalność
 **System rezerwacji biletów lotniczych**
-1) [] Baza lotów (Miasto od , Miasto do, dzień, godzina)
-2) [] Wyszukiwanie lotów
-3) [] Kupno biletu
-4) [] Odbiór potwierdzenia kupna w formacie PDF
-5) [] Sprawdzenie rezerwacji na podstawie podanego numeru
+1) [ ] Baza lotów (Miasto od , Miasto do, dzień, godzina)
+2) [ ] Wyszukiwanie lotów
+3) [ ] Kupno biletu
+4) [ ] Odbiór potwierdzenia kupna w formacie PDF
+5) [ ] Sprawdzenie rezerwacji na podstawie podanego numeru
 
-# Instrukcja konfiguracji serwera w .NET
+# Instrukcja konfiguracji serwera
 <details>
 <summary><h3>Stworzenie pustej bazy danych</h3></summary>
   Tworzymy bazę danych za pomocą <b><code>SQL Server Object Explorer</code></b>.<br>
@@ -47,7 +47,7 @@ ___
   ```
 </details>
 
-# Instrukcja konfiguracji klienta w pythonie
+# Instrukcja konfiguracji klienta
 Przechodzimy w konsoli do folderu **`pythonClient`**
 
 Tworzymy wirtualne środowisko

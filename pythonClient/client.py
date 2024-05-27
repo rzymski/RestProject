@@ -6,9 +6,11 @@ from tkinter import filedialog
 
 
 class AirportClient:
-    def __init__(self, baseUrl, certificate=False):
-        self.baseUrl = baseUrl
+    def __init__(self, ipAddress, serverPort, controllerName, username=None, password=None, proxyPorts=(), proxyInClientSide=True, certificate=False):
+        self.baseUrl = f"https://{ipAddress}:{serverPort}/{controllerName}"
         self.certificate = certificate
+        self.username = username
+        self.password = password
 
     @staticmethod
     def printRequest(request):
@@ -27,9 +29,14 @@ class AirportClient:
             return serviceResponse
         return wrapper
 
+    def setUser(self, username, password):
+        self.username = username
+        self.password = password
+
     @printService
-    def service(self, serviceName, serviceMethod, pathParameter="", data=None, json=None, parameters=None, headers=None, matrixParameters=[], expectedResponseFormat="json"):
+    def service(self, serviceName, serviceMethod, pathParameter="", data=None, json=None, parameters=None, headers={}, matrixParameters=[], expectedResponseFormat="json"):
         serviceUrl = f"{self.baseUrl}/{serviceName}/" + pathParameter + ''.join([f";{matrixParam}" for matrixParam in matrixParameters])
+        headers.update({"username": self.username, "password": self.password})
         try:
             requestResponse = requests.request(
                 url=serviceUrl,
@@ -40,7 +47,7 @@ class AirportClient:
                 json=json,  # Używany do wysyłania danych jako JSON
                 verify=self.certificate
             )
-            # AirportClient.printRequest(requestResponse.request)  # Wyswietlanie danych wyslanego requesta
+            AirportClient.printRequest(requestResponse.request)  # Wyswietlanie danych wyslanego requesta
             requestResponse.raise_for_status()
             if expectedResponseFormat.lower() == "json":
                 return requestResponse.json() if requestResponse.text else None
@@ -79,13 +86,15 @@ class AirportClient:
 
 
 if __name__ == "__main__":
-    client = AirportClient("https://localhost:8080/AirPort", certificate="certificate.pem")
+    client = AirportClient("localhost", 8080, "Airport", certificate="certificate.pem")
+    client.setUser("adminUser", "pass")
+
     # response = client.service("GetFlightById", "GET", pathParameter="100")
     # response = client.service("GetAllQualifyingFlights", "GET", parameters={"departureAirport": "Tokyo", "destinationAirport": "warsaw", "departureStartDateRange": "2024-05-18T00:00:00", "departureEndDateRange": "2024-05-21T00:00:00"})
     # client.generatePDF(2652)
     # response = client.service("GetAvailableAirports", "GET", expectedResponseFormat="text")
     # response = client.service("CreateUser", "POST", json={"login": "adminUser", "password": "pass", "email": "email@wp.pl"})
-    # response = client.service("ReserveFlight", "POST", pathParameter="999", json=9, headers={"username": "adminUser", "password": "pass"})
+    response = client.service("ReserveFlight", "POST", pathParameter="888", json=8)
     # response = client.service("CheckFlightReservation", "GET", pathParameter="2752")
     # response = client.service("CancelFlightReservation", "DELETE", pathParameter="2752")
     # response = client.service("CancelUserReservationInConcreteFlight", "DELETE", pathParameter="1700", headers={"username": "adminUser", "password": "pass"})

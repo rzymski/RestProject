@@ -4,6 +4,7 @@ using DB.Repositories.Interfaces;
 using DB.Services;
 using DB.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using RestProject.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,5 +48,9 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
+// Uzycie middleware do np. sprawdzenia czasy wykonywania sie metody lub autoryzacji uzytkownika
+app.UseMiddleware<MeasureTimeMiddleware>();
+app.UseMiddleware<UserAuthenticationMiddleware>();
 
 app.Run("https://localhost:8080");

@@ -9,14 +9,14 @@ namespace RestProject.Controllers
 {
     [ApiController]
     [Route("[controller]/[action]")]
-    public class AirPortController : ControllerBase
+    public class AirportController : ControllerBase
     {
         private readonly ILogger<FlightController> logger;
         private readonly IFlightService flightService;
         private readonly IFlightReservationService flightReservationService;
         private readonly IUserService userService;
 
-        public AirPortController(ILogger<FlightController> logger, IFlightService flightService, IFlightReservationService flightReservationService, IUserService userService)
+        public AirportController(ILogger<FlightController> logger, IFlightService flightService, IFlightReservationService flightReservationService, IUserService userService)
         {
             this.logger = logger;
             this.flightService = flightService;
@@ -27,6 +27,13 @@ namespace RestProject.Controllers
         private UserDto? AuthenticateUser(string username, string password)
         {
             return userService.GetByParameters(username, password).SingleOrDefault();
+        }
+
+        [HttpPost]
+        public ActionResult<string> Echo([FromHeader] string username, [FromBody] string text)
+        {
+            Response.Headers["usernameExist"] = (userService.GetByLogin(username) != null).ToString();
+            return Ok($"Serwer zwraca otrzymany text: {text}");
         }
 
 
