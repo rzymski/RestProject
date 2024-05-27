@@ -1,6 +1,8 @@
 import requests
 from icecream import ic
 from datetime import datetime, timedelta
+import tkinter as tk
+from tkinter import filedialog
 
 
 class AirportClient:
@@ -16,9 +18,12 @@ class AirportClient:
 
     @staticmethod
     def printService(func):
-        def wrapper(self, *args, **kwargs):
-            serviceResponse = func(self, *args, **kwargs)
-            ic(args, kwargs, serviceResponse)
+        def wrapper(self, serviceName, serviceMethod, *args, **kwargs):
+            serviceResponse = func(self, serviceName, serviceMethod, *args, **kwargs)
+            if serviceName == "generatePDF":
+                ic(serviceName, serviceMethod, args, kwargs)
+            else:
+                ic(serviceName, serviceMethod, args, kwargs, serviceResponse)
             return serviceResponse
         return wrapper
 
@@ -41,6 +46,8 @@ class AirportClient:
                 return requestResponse.json() if requestResponse.text else None
             elif expectedResponseFormat.lower() == "xml" or expectedResponseFormat.lower() == "text":
                 return requestResponse.text
+            elif expectedResponseFormat.lower() == "binary":
+                return requestResponse.content
             else:
                 raise ValueError(f"Niewspierany format odpowiedzi: {expectedResponseFormat}")
         except ValueError:
@@ -53,42 +60,25 @@ class AirportClient:
             print(f"W service wystąpił błąd z komunikatem: {e}")
             return None
 
+    def generatePDF(self, reservationID):
+        pdfBytes = self.service("generatePDF", "GET", str(reservationID), expectedResponseFormat="binary")
+        root = tk.Tk()
+        root.withdraw()
+        if pdfBytes:
+            filePath = filedialog.asksaveasfilename(defaultextension=".pdf", filetypes=[("Pliki PDF", "*.pdf")], initialfile=f"ticketConfirmation{reservationID}", title="Zapisz pdf-a", initialdir="../pdfs")
+            if filePath:
+                try:
+                    with open(filePath, 'wb') as file:
+                        file.write(pdfBytes)
+                        print("Save pdf file at " + filePath)
+                except IOError as e:
+                    print("Błąd podczas zapisywania pliku:", e)
+            else:
+                print("Zapis pliku został anulowany.")
+        root.destroy()
+
 
 if __name__ == "__main__":
-    client = AirportClient("https://localhost:8080/Flight", certificate="certificate.pem")
-    # Get method
-    # response = client.service("GetList", "GET")
-    response = client.service("GetOne", "GET", pathParameter="1824")
-    # response = client.service("GetByValues", "GET", parameters={"author": "Adam", "content": "Secret", "priority": 1})
-    # response = client.service("GetHeaderValues", "GET", headers={"username": "admin", "password": "pass"}, expectedResponseFormat="text")
-    # response = client.service("GetMatrixParams", "GET", pathParameter="exampleParams", matrixParameters=["arg0=1", "arg1=Kot", "arg2=Pies", "arg3=1950"])
-
-
-    # Add method
-    # message = {
-    #     "author": "Peter",
-    #     "content": "PIZZA TIME",
-    #     "priority": 5,
-    #     "created": datetime.now().isoformat()
-    # }
-    # response = client.service("Add", "POST", json=message)
-
-    # Update method
-    # editedMessage = {
-    #     "author": "Darius",
-    #     "content": "PIZZA IS THE BEST",
-    #     "priority": 3,
-    #     "created": (datetime.now() + timedelta(days=2, hours=3)).isoformat()
-    # }
-    # response = client.service("Update", "PUT", pathParameter="4003", json=editedMessage)
-
-    # Delete method
-    # response = client.service("Delete", "DELETE", pathParameter="4002")
-
-    # XML response
-    # client = RestClient("https://localhost:8080/rest/api/Hello")
-    # response = client.service("messages", "get", pathParameter="xml", expectedResponseFormat="xml")
-
-
-# response = requests.get("https://localhost:8080/GetList", verify="D:/programowanie/C#/aplikacjeKonsolowe/rest/RESTfulWebServices/pythonClient/localhost.pem")
-# print(response)
+    client = AirportClient("https://localhost:8080/AirPort", certificate="certificate.pem")
+    response = client.service("GetFlightById", "GET", pathParameter="100")
+    client.generatePDF(2652)

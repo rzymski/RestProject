@@ -96,5 +96,35 @@ namespace DB.Services
             if ((!update && existingFlightReservations.Count != 0) || (update && existingFlightReservations.Count != 1))
                 throw new InvalidOperationException($"Another flightReservation with flightId = {flightId} and userId = {userId} already exist. Can't add/update another.");
         }
+
+        public FlightReservationAllFieldsDto GetByIdAllFieldsDtoObject(int id)
+        {
+            var flightReservation = flightReservationRepository.GetById(id);
+            if (flightReservation == null)
+                throw new InvalidOperationException($"FlightReservation with id = {id} does not exist.");
+            var flight = flightRepository.GetById(flightReservation.FlightId);
+            if (flight == null)
+                throw new InvalidOperationException($"Flight with id = {flightReservation.FlightId} does not exist. It seems that reservation with id = {id} have no correct flight.");
+            var user = userRepository.GetById(flightReservation.UserId);
+            if (user == null)
+                throw new InvalidOperationException($"User with id = {flightReservation.UserId} does not exist. It seems that reservation with id = {id} have no correct user.");
+            var flightReservationAllData = new FlightReservationAllFieldsDto
+            {
+                ReservationId = flightReservation.Id,
+                NumberOfReservedSeats = flightReservation.NumberOfReservedSeats,
+
+                FlightId = flight.Id,
+                FlightCode = flight.FlightCode,
+                DepartureAirport = flight.DepartureAirport,
+                DepartureTime = flight.DepartureTime,
+                DestinationAirport = flight.DestinationAirport,
+                ArrivalTime = flight.ArrivalTime,
+
+                UserId = user.Id,
+                Login = user.Login,
+                Email = user.Email
+            };
+            return flightReservationAllData;
+        }
     }
 }

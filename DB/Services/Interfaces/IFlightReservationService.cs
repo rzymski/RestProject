@@ -9,5 +9,6 @@ namespace DB.Services.Interfaces
     {
         bool ChangeNumberOfReservedSeats(int id, short numberOfReservedSeats);
         List<FlightReservationDto> GetByParameters(int? flightId, int? userId, short? numberOfReservedSeats = null);
+        FlightReservationAllFieldsDto GetByIdAllFieldsDtoObject(int id);
     }
 }

@@ -87,7 +87,7 @@ namespace RestProject.Controllers
         }
 
         [HttpDelete]
-        public ActionResult CancelFlightReservation([FromRoute] int flightReservationId) 
+        public ActionResult CancelFlightReservation([FromRoute] int flightReservationId)
         {
             var result = flightReservationService.Delete(flightReservationId);
             if (result)
@@ -148,36 +148,69 @@ namespace RestProject.Controllers
         }
 
         [HttpGet("{id}")]
-        public void GeneratePdf([FromRoute] int id)
+        public ActionResult GeneratePDF([FromRoute] int id)
         {
             var fr = flightReservationService.GetByIdDtoObject(id);
             if (fr == null)
-                return;
+                return NotFound($"Not found flight reservation with id = {id}");
+
             var f = flightService.GetByIdDtoObject(fr.FlightId);
             var u = userService.GetByIdDtoObject(fr.UserId);
-            var reservation = new FlightReservationPDFData
+            if (f == null || u == null)
+                return NotFound($"Flight reservation have null user = {u} or flight = {f}");
+
+            var reservation = new FlightReservationAllFieldsDto
             {
                 ReservationId = fr.Id,
                 NumberOfReservedSeats = fr.NumberOfReservedSeats,
-                Login = u.Login,
-                Email = u.Email,
+
+                FlightId = f.Id,
                 FlightCode = f.FlightCode,
                 DepartureAirport = f.DepartureAirport,
                 DepartureTime = f.DepartureTime,
-                DestinationAirport = f.DepartureAirport,
-                ArrivalTime = f.ArrivalTime
+                DestinationAirport = f.DestinationAirport,
+                ArrivalTime = f.ArrivalTime,
+
+                UserId = u.Id,
+                Login = u.Login,
+                Email = u.Email
             };
-            // Ścieżka do zapisu wygenerowanego PDF
-            string pdfPath = Path.Combine("../pdfs", "test2.pdf");
-            using (var outputStream = new FileStream(pdfPath, FileMode.Create, FileAccess.Write))
-            {
-                var pdfGenerator = new PdfGenerator(outputStream, reservation);
-                pdfGenerator.SetHeaderFooter("", ""); // brak tekstu w header-ze i footerze
-                string relativeImagePath = Path.Combine("../images", "plane.png");
-                pdfGenerator.SetImage(relativeImagePath);
-                pdfGenerator.Generate();
-            }
-            Console.WriteLine("PDF został wygenerowany i zapisany jako: " + pdfPath);
+
+            var pdfGenerator = new PdfGenerator(reservation);
+            pdfGenerator.SetHeaderFooter("", ""); // brak tekstu w header-ze i footerze
+            string relativeImagePath = Path.Combine("../images", "plane.png");
+            pdfGenerator.SetImage(relativeImagePath); // Ustawienie obrazu
+            byte[] pdfBytes = pdfGenerator.Generate();
+
+            return File(pdfBytes, "application/pdf", "Reservation.pdf");
         }
+
+        [HttpGet("{id}")]
+        public ActionResult GetFlightReservationAllData([FromRoute] int id)
+        {
+            try
+            {
+                return Ok(flightReservationService.GetByIdAllFieldsDtoObject(id));
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult> GetAsynchronouslyFlightReservationAllDataAsync([FromRoute] int id)
+        {
+            try
+            {
+                var result = await Task.Run(() => flightReservationService.GetByIdAllFieldsDtoObject(id));
+                return Ok(result);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
     }
 }
