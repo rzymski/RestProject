@@ -1,12 +1,32 @@
 ___
-**RESTProject**
+**Serwer stworzony w ASP.NET CORE Web API .NET 8.0 i klient w python 3.11**
 ___
 
-# Konfiguracja
+## Zawartość REDME
+1. :airplane: [Funkcjonalność](#funkcjonalność)
+2. :computer: [Działanie serwera](#działanie-serwera)
+3. :wrench: [Konfiguracja serwera](#instrukcja-konfiguracji-serwera-w-.net)
+4. :dragon: [Konfiguracja klienta w pythonie](#instrukcja-konfiguracji-klienta-w-pythonie)
+5. :lock: [Konfiguracja certifikatu SSL dla klienta](#instrukcja-konfiguracji-certifikatu-ssl-dla-klienta-w-pythonie)
+6. :satellite: [Modyfikowanie bazy danych](#użycie-skryptu-pythonowego-do-modyfikowania-bazy-danych)
+7. :eyes: [Monitorowanie requestów](#instrukcja-monitorowania-requestów)
+8. :file_folder: [Struktura projektu](#struktura-projektu)
+9. :white_check_mark: [Wskazówki](#wskazówki-użycia)
+10. :godmode: [SWAGGER](#swagger)
+
+# Funkcjonalność
+**System rezerwacji biletów lotniczych**
+1) [] Baza lotów (Miasto od , Miasto do, dzień, godzina)
+2) [] Wyszukiwanie lotów
+3) [] Kupno biletu
+4) [] Odbiór potwierdzenia kupna w formacie PDF
+5) [] Sprawdzenie rezerwacji na podstawie podanego numeru
+
+# Instrukcja konfiguracji serwera w .NET
 <details>
 <summary><h3>Stworzenie pustej bazy danych</h3></summary>
   Tworzymy bazę danych za pomocą <b><code>SQL Server Object Explorer</code></b>.<br>
-  View -> SQL Server Object Explorer -> SQL Server -> Database -> Add new Database<br>
+  View -> SQL Server Object Explorer -> SQL Server -> Database -> Add new Database<br><br>
   Po stworzeniu bazy danych, odświeżamy ją klikając na nią prawym przyciskiem i Refresh.<br>
   Nastepnie klikamy na nią prawym przyciskiem, wybieramy <b>Properties</b><br>
   z <b>Properties</b> kopiujemy wartość <b>Connection string</b>, które umieszczmy w <b><code>appsettings.json</code></b> w <b>"DefaultConnectionString"</b><br>
@@ -17,16 +37,35 @@ ___
   View -> Other Windows -> Package Manage Console<br>
   W <b>Package Manage Console</b> w <b><code>Default project:</code></b>  wybieramy <b><code>DB</code></b><br><br>
   
-  Dodanie nowej migracji *opcjonalne*
+  Dodanie nowej migracji *\*opcjonalne\**
   ```sh
   add-migration InitialCreateDatabase
   ```
-  Wdrożenie migracji i zaktualizowanie bazy danych
+  Wdrożenie migracji i zaktualizowanie bazy danych **\*wymagane\***
   ```sh
   update-database
   ```
 </details>
 
+# Instrukcja konfiguracji klienta w pythonie
+Przechodzimy w konsoli do folderu **`pythonClient`**
+
+Tworzymy wirtualne środowisko
+```sh
+python -m venv venv
+```
+
+Aktywujemy wirtualne środowisko
+```sh
+.\venv\Scripts\activate
+```
+Instalujemy wszystkie potrzebne biblioteki z pliku `requirements.txt`
+```sh
+pip install -r .\requirements.txt
+```
+
+# Instrukcja konfiguracji certifikatu SSL dla klienta w pythonie
+Wymaga Windows Powershell i OpenSSL
 <details>
 <summary><h3>Utworzenie certifikatu ssl dla klienta w pythonie</h3></summary>
   Otwieramy <b>Windows PowerShell jako administrator</b><br><br>
@@ -61,3 +100,4 @@ ___
   ```
   Po wpisaniu polecenia należy podać wcześniej wybrane hasło w tym przykładzie było to twojeDowolneHaslo
 </details>
+

@@ -83,3 +83,12 @@ if __name__ == "__main__":
     # response = client.service("GetFlightById", "GET", pathParameter="100")
     # response = client.service("GetAllQualifyingFlights", "GET", parameters={"departureAirport": "Tokyo", "destinationAirport": "warsaw", "departureStartDateRange": "2024-05-18T00:00:00", "departureEndDateRange": "2024-05-21T00:00:00"})
     # client.generatePDF(2652)
+    # response = client.service("GetAvailableAirports", "GET", expectedResponseFormat="text")
+    # response = client.service("CreateUser", "POST", json={"login": "adminUser", "password": "pass", "email": "email@wp.pl"})
+    # response = client.service("ReserveFlight", "POST", pathParameter="999", json=9, headers={"username": "adminUser", "password": "pass"})
+    # response = client.service("CheckFlightReservation", "GET", pathParameter="2752")
+    # response = client.service("CancelFlightReservation", "DELETE", pathParameter="2752")
+    # response = client.service("CancelUserReservationInConcreteFlight", "DELETE", pathParameter="1700", headers={"username": "adminUser", "password": "pass"})
+    # response = client.service("GetUserReservations", "GET", pathParameter="adminUser")
+    # response = client.service("GetFlightAvailableSeats", "GET", pathParameter="1700")
+

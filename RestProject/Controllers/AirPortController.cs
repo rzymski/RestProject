@@ -48,12 +48,12 @@ namespace RestProject.Controllers
             return Ok(flightService.GetAllAirports());
         }
 
-        [HttpGet("{id}")]
-        public ActionResult CheckFlightReservation([FromRoute] int id)
+        [HttpGet("{flightReservationId}")]
+        public ActionResult CheckFlightReservation([FromRoute] int flightReservationId)
         {
-            var result = flightReservationService.GetByIdDtoObject(id);
+            var result = flightReservationService.GetByIdDtoObject(flightReservationId);
             if (result == null)
-                return NotFound(new { flightReservation = $"Not found flight reservation  with id = {id}." });
+                return NotFound(new { flightReservation = $"Not found flight reservation  with id = {flightReservationId}." });
             return Ok(result);
         }
 
@@ -84,7 +84,7 @@ namespace RestProject.Controllers
             }
         }
 
-        [HttpDelete]
+        [HttpDelete("{flightReservationId}")]
         public ActionResult CancelFlightReservation([FromRoute] int flightReservationId)
         {
             var result = flightReservationService.Delete(flightReservationId);
@@ -93,7 +93,7 @@ namespace RestProject.Controllers
             return NotFound();
         }
 
-        [HttpDelete]
+        [HttpDelete("{flightId}")]
         public ActionResult CancelUserReservationInConcreteFlight([FromRoute] int flightId, [FromHeader] string username, [FromHeader] string password)
         {
             var user = AuthenticateUser(username, password);
