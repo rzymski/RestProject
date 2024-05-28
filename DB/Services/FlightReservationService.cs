@@ -119,6 +119,7 @@ namespace DB.Services
                 DepartureTime = flight.DepartureTime,
                 DestinationAirport = flight.DestinationAirport,
                 ArrivalTime = flight.ArrivalTime,
+                Capacity = flight.Capacity,
 
                 UserId = user.Id,
                 Login = user.Login,

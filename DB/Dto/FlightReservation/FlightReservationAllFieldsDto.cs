@@ -21,6 +21,7 @@ namespace DB.Dto.FlightReservation
         public DateTime DepartureTime { get; set; }
         public string DestinationAirport { get; set; } = null!;
         public DateTime ArrivalTime { get; set; }
+        public short Capacity { get; set; }
 
         public int UserId { get; set; }
         public string Login { get; set; } = null!;

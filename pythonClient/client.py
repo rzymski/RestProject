@@ -1,4 +1,6 @@
 import requests
+from requests.exceptions import ConnectionError
+from urllib3.exceptions import NewConnectionError, MaxRetryError
 from icecream import ic
 from datetime import datetime, timedelta
 import tkinter as tk
@@ -12,6 +14,16 @@ class AirportClient:
         self.username = username
         self.password = password
         self.responseHeaders = {}
+    #     self.checkServerAvailability(ipAddress, serverPort)
+    #
+    # def checkServerAvailability(self, ipAddress, serverPort):
+    #     baseServerUrl = f"https://{ipAddress}:{serverPort}"
+    #     try:
+    #         checkResponse = requests.get(baseServerUrl, verify=self.certificate)
+    #     except(ConnectionRefusedError, ConnectionError, NewConnectionError, MaxRetryError) as e:
+    #         raise ValueError(f"Nie udało się połączyć z adresem URL = {baseServerUrl}. Najprawdopodobniej serwer jest wyłączony.")
+    #     except Exception as e:
+    #         raise ValueError(f"Wystąpił nieoczekiwany błąd: {e}")
 
     @staticmethod
     def printRequest(request):
@@ -36,7 +48,7 @@ class AirportClient:
 
     @printService
     def service(self, serviceName, serviceMethod, pathParameter="", data=None, json=None, parameters=None, headers={}, matrixParameters=[], expectedResponseFormat="json"):
-        serviceUrl = f"{self.baseUrl}/{serviceName}/" + pathParameter + ''.join([f";{matrixParam}" for matrixParam in matrixParameters])
+        serviceUrl = f"{self.baseUrl}/{serviceName}/" + str(pathParameter) + ''.join([f";{matrixParam}" for matrixParam in matrixParameters])
         headers.update({"username": self.username, "password": self.password})
         try:
             requestResponse = requests.request(
@@ -48,8 +60,9 @@ class AirportClient:
                 json=json,  # Używany do wysyłania danych jako JSON
                 verify=self.certificate
             )
-            self.responseHeaders = AirportClient.getHeadersFromResponse(requestResponse, ("userValidation",))
-            # AirportClient.printRequest(requestResponse.request)  # Wyswietlanie danych wyslanego requesta
+            self.responseHeaders.update(AirportClient.getHeadersFromResponse(requestResponse, ("userValidation",)))
+            ic(self.responseHeaders)
+            AirportClient.printRequest(requestResponse.request)  # Wyswietlanie danych wyslanego requesta
             requestResponse.raise_for_status()
             if expectedResponseFormat.lower() == "json":
                 return requestResponse.json() if requestResponse.text else None
@@ -94,22 +107,27 @@ class AirportClient:
                 headers.update({headerName: serviceResponse.headers[headerName]})
         return headers
 
+    def getHeaderValidationValue(self, serviceName, *args, **kwargs):
+        serviceResponse = self.service(serviceName, *args, **kwargs)
+        ic(self.responseHeaders)
+        if "userValidation" in self.responseHeaders:
+            return self.responseHeaders["userValidation"]
+        return None
+
 
 if __name__ == "__main__":
     client = AirportClient("localhost", 8080, "Airport", certificate="certificate.pem")
     # client.setUser("adminUser", "pass")
 
-    response = client.service("GetFlightById", "GET", pathParameter="100")
+    response = client.service("GetFlightById", "GET", pathParameter=100)
     # response = client.service("GetAllQualifyingFlights", "GET", parameters={"departureAirport": "Tokyo", "destinationAirport": "warsaw", "departureStartDateRange": "2024-05-18T00:00:00", "departureEndDateRange": "2024-05-21T00:00:00"})
     # client.generatePDF(2652)
-    # response = client.service("GetAvailableAirports", "GET", expectedResponseFormat="text")
+    response = client.service("GetAvailableAirports", "GET", expectedResponseFormat="text")
     # response = client.service("CreateUser", "POST", json={"login": "adminUser", "password": "pass", "email": "email@wp.pl"})
     # response = client.service("ReserveFlight", "POST", pathParameter="888", json=8)
-    # response = client.service("CheckFlightReservation", "GET", pathParameter="2752")
-    # response = client.service("CancelFlightReservation", "DELETE", pathParameter="2752")
-    # response = client.service("CancelUserReservationInConcreteFlight", "DELETE", pathParameter="1700")
+    # response = client.service("CheckFlightReservation", "GET", pathParameter=2752)
+    # response = client.service("CancelFlightReservation", "DELETE", pathParameter=2752)
+    # response = client.service("CancelUserReservationInConcreteFlight", "DELETE", pathParameter=1700)
     # response = client.service("GetUserReservations", "GET", pathParameter="adminUser")
-    # response = client.service("GetFlightAvailableSeats", "GET", pathParameter="1700")
-
-    ic(client.responseHeaders)
+    # response = client.service("GetFlightAvailableSeats", "GET", pathParameter=1700)
 

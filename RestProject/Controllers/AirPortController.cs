@@ -45,7 +45,7 @@ namespace RestProject.Controllers
         [HttpGet("{flightReservationId}")]
         public ActionResult CheckFlightReservation([FromRoute] int flightReservationId)
         {
-            var result = flightReservationService.GetByIdDtoObject(flightReservationId);
+            var result = flightReservationService.GetByIdAllFieldsDtoObject(flightReservationId);
             if (result == null)
                 return NotFound(new { flightReservation = $"Not found flight reservation  with id = {flightReservationId}." });
             return Ok(result);
@@ -118,12 +118,21 @@ namespace RestProject.Controllers
         }
 
         [HttpGet("{username}")]
-        public ActionResult<List<FlightReservationDto>> GetUserReservations([FromRoute] string username)
+        public ActionResult<List<FlightReservationAllFieldsDto>> GetUserReservations([FromRoute] string username)
         {
             var user = userService.GetByLogin(username);
             if (user == null)
                 return NotFound($"Not found user with login = {username}");
-            return Ok(flightReservationService.GetByParameters(null, user.Id));
+            List<FlightReservationDto> flightReservationsDto = flightReservationService.GetByParameters(null, user.Id);
+
+            List<FlightReservationAllFieldsDto> flightReservationsAllFieldsDto = new List<FlightReservationAllFieldsDto>();
+            foreach (var reservationDto in flightReservationsDto)
+            {
+                FlightReservationAllFieldsDto reservationAllFieldsDto = flightReservationService.GetByIdAllFieldsDtoObject(reservationDto.Id);
+                flightReservationsAllFieldsDto.Add(reservationAllFieldsDto);
+            }
+            return Ok(flightReservationsAllFieldsDto);
+            //return Ok(flightReservationService.GetByParameters(null, user.Id));
         }
 
         [HttpGet("{flightId}")]
