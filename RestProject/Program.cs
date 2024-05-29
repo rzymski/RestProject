@@ -50,6 +50,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Uzycie middleware do np. sprawdzenia czasy wykonywania sie metody lub autoryzacji uzytkownika
+app.UseMiddleware<AddServicePathToHeader>();
 app.UseMiddleware<MeasureTimeMiddleware>();
 app.UseMiddleware<UserAuthenticationMiddleware>();
 

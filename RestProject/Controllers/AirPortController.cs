@@ -31,7 +31,7 @@ namespace RestProject.Controllers
         }
 
         [HttpGet]
-        public ActionResult<string> GetAllQualifyingFlights([FromQuery] string? departureAirport, [FromQuery] string? destinationAirport, [FromQuery] DateTime? departureStartDateRange, [FromQuery] DateTime? departureEndDateRange)
+        public ActionResult<List<FlightDto>> GetAllQualifyingFlights([FromQuery] string? departureAirport, [FromQuery] string? destinationAirport, [FromQuery] DateTime? departureStartDateRange, [FromQuery] DateTime? departureEndDateRange)
         {
             return Ok(flightService.GetAllQualifyingFlights(departureAirport, destinationAirport, departureStartDateRange, departureEndDateRange));
         }
@@ -67,7 +67,6 @@ namespace RestProject.Controllers
             UserDto? user = HttpContext.Items["CurrentUser"] as UserDto;
             if (user == null)
                 return NotFound($"Not found user with username: {username} and given password");
-            Console.WriteLine($"Wywolano z flightId = {flightId} i numSeats = {numberOfReservedSeats}");
             var existFlightReservation = flightReservationService.GetByParameters(flightId, user.Id).SingleOrDefault();
             if (existFlightReservation == null)
                 return Ok(flightReservationService.Add(new FlightReservationAddEditDto(flightId, user.Id, numberOfReservedSeats)));
@@ -118,7 +117,7 @@ namespace RestProject.Controllers
         }
 
         [HttpGet("{username}")]
-        public ActionResult<List<FlightReservationAllFieldsDto>> GetUserReservations([FromRoute] string username)
+        public ActionResult GetUserReservations([FromRoute] string username)
         {
             var user = userService.GetByLogin(username);
             if (user == null)
@@ -136,7 +135,7 @@ namespace RestProject.Controllers
         }
 
         [HttpGet("{flightId}")]
-        public ActionResult<int> GetFlightAvailableSeats([FromRoute] int flightId)
+        public ActionResult GetFlightAvailableSeats([FromRoute] int flightId)
         {
             try
             {
@@ -230,5 +229,35 @@ namespace RestProject.Controllers
             Response.Headers["usernameExist"] = (userService.GetByLogin(username) != null).ToString();
             return Ok($"Serwer zwraca otrzymany text: {text}");
         }
+
+
+        //[HttpGet("{flightId}/comments")]
+        //public IActionResult GetComments(int flightId)
+        //{
+        //    return RedirectToAction("GetComments", "Comments", new { flightId = flightId });
+        //}
+        //[HttpPost("{flightId}/comments")]
+        //public IActionResult AddComment(int flightId, [FromBody] string comment)
+        //{
+        //    return RedirectToAction("AddComment", "Comments", new { flightId = flightId, comment = comment });
+        //}
     }
+
+
+    //[ApiController]
+    //[Route("Airport/[controller]")]
+    //public class CommentsController : ControllerBase
+    //{
+    //    [HttpGet("{flightId}/comments")]
+    //    public ActionResult<List<string>> GetComments(int flightId)
+    //    {
+    //        return Ok(new List<string> { "Comment 1", "Comment 2" });
+    //    }
+
+    //    [HttpPost("{flightId}/comments")]
+    //    public ActionResult<string> AddComment(int flightId, [FromBody] string comment)
+    //    {
+    //        return Ok("Comment added");
+    //    }
+    //}
 }
