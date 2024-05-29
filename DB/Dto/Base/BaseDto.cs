@@ -1,10 +1,12 @@
-﻿using System.Reflection;
+﻿using DB.Dto.HATEOAS;
+using System.Reflection;
 using System.Text;
 
 namespace DB.Dto.Base
 {
     public abstract class BaseDto
     {
+        public List<Link> Links { get; set; } = new List<Link>();
         public BaseDto() { }
 
         public override string ToString()

@@ -4,6 +4,7 @@ using DB.Dto.User;
 using DB.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using RestProject.pdfGenerator;
+using System.Collections.Generic;
 
 namespace RestProject.Controllers
 {
@@ -15,19 +16,22 @@ namespace RestProject.Controllers
         private readonly IFlightService flightService;
         private readonly IFlightReservationService flightReservationService;
         private readonly IUserService userService;
+        private LinkGenerator _linkGenerator;
 
-        public AirportController(ILogger<FlightController> logger, IFlightService flightService, IFlightReservationService flightReservationService, IUserService userService)
+        public AirportController(ILogger<FlightController> logger, IFlightService flightService, IFlightReservationService flightReservationService, IUserService userService, LinkGenerator linkGenerator)
         {
             this.logger = logger;
             this.flightService = flightService;
             this.flightReservationService = flightReservationService;
             this.userService = userService;
+            _linkGenerator = linkGenerator;
         }
 
         [HttpGet]
         public ActionResult<List<FlightDto>> GetFlightsData()
         {
-            return Ok(flightService.GetAllDtoList());
+            List<FlightDto> flights = flightService.GetAllDtoList();
+            return Ok(flights);
         }
 
         [HttpGet]
@@ -229,6 +233,19 @@ namespace RestProject.Controllers
             Response.Headers["usernameExist"] = (userService.GetByLogin(username) != null).ToString();
             return Ok($"Serwer zwraca otrzymany text: {text}");
         }
+
+
+
+        //private IEnumerable<Link> CreateLinksForFlight(int id, string fields = "")
+        //{
+        //    var links = new List<Link>
+        //    {
+        //            new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetFlightById), values: new { id, fields }), "self", "GET"),
+        //            new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(DeleteFlight), values: new { id }), "delete_flight", "DELETE"),
+        //        new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(UpdateFlight), values: new { id }), "update_flight", "PUT")
+        //    };
+        //    return links;
+        //}
 
 
         //[HttpGet("{flightId}/comments")]
