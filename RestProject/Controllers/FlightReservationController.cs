@@ -1,10 +1,12 @@
 ﻿using DB.Dto.Flight;
 using DB.Dto.FlightReservation;
+using DB.Dto.HATEOAS;
 using DB.Dto.User;
 using DB.Entities;
 using DB.Services;
 using DB.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.Runtime.CompilerServices;
 
 namespace RestProject.Controllers
 {
@@ -14,11 +16,13 @@ namespace RestProject.Controllers
     {
         private readonly ILogger<FlightReservationController> logger;
         private readonly IFlightReservationService flightReservationService;
+        private LinkGenerator _linkGenerator;
 
-        public FlightReservationController(ILogger<FlightReservationController> logger, IFlightReservationService flightReservationService)
+        public FlightReservationController(ILogger<FlightReservationController> logger, IFlightReservationService flightReservationService, LinkGenerator linkGenerator)
         {
             this.logger = logger;
             this.flightReservationService = flightReservationService;
+            _linkGenerator = linkGenerator;
         }
 
         [HttpGet("{id}")]
@@ -27,13 +31,17 @@ namespace RestProject.Controllers
             var result = flightReservationService.GetByIdDtoObject(id);
             if (result == null)
                 return NotFound(new { flightReservation = $"FlightReservation not found with id = {id}." });
+            result.Links = CreateLinksForFlightReservation(result.Id);
             return Ok(result);
         }
 
         [HttpGet]
         public ActionResult<List<FlightReservationDto>> GetList()
         {
-            return Ok(flightReservationService.GetAllDtoList());
+            List<FlightReservationDto> flightReservations = flightReservationService.GetAllDtoList();
+            foreach (var flightReservation in flightReservations)
+                flightReservation.Links = CreateLinksForFlightReservation(flightReservation.Id);
+            return Ok(CreateLinksForFlightReservations(flightReservations));
         }
 
         [HttpPost]
@@ -108,7 +116,10 @@ namespace RestProject.Controllers
         [HttpGet]
         public ActionResult<string> GetByValues([FromQuery] int? flightId, [FromQuery] int? userId, [FromQuery] short? numberOfReservedSeats)
         {
-            return Ok(flightReservationService.GetByParameters(flightId, userId, numberOfReservedSeats));
+            List<FlightReservationDto> flightReservations = flightReservationService.GetByParameters(flightId, userId, numberOfReservedSeats);
+            foreach (var flightReservation in flightReservations)
+                flightReservation.Links = CreateLinksForFlightReservation(flightReservation.Id);
+            return Ok(CreateLinksForFlightReservations(flightReservations));
         }
 
         [HttpGet("{id}")]
@@ -116,7 +127,12 @@ namespace RestProject.Controllers
         {
             try
             {
-                return Ok(flightReservationService.GetByIdAllFieldsDtoObject(id));
+
+                var result = flightReservationService.GetByIdAllFieldsDtoObject(id);
+                if (result == null)
+                    return NotFound(new { flightReservation = $"FlightReservation not found with id = {id}." });
+                result.Links = CreateLinksForFlightReservation(id);
+                return Ok(result);
             }
             catch (InvalidOperationException ex)
             {
@@ -130,12 +146,55 @@ namespace RestProject.Controllers
             try
             {
                 var result = await Task.Run(() => flightReservationService.GetByIdAllFieldsDtoObject(id));
+                if (result == null)
+                    return NotFound(new { flightReservation = $"FlightReservation not found with id = {id}." });
+                result.Links = CreateLinksForFlightReservation(id);
                 return Ok(result);
             }
             catch (InvalidOperationException ex)
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+
+        //HATEOAS
+        //nie dziala generowanie href dla GetAsynchronouslyFlightReservationAllDataAsync nie wiem czemu
+        private List<Link> CreateLinksForFlightReservation(int id, [CallerMemberName] string actionName = "")
+        {
+            var links = new List<Link>
+            {
+                new Link(_linkGenerator.GetUriByAction(HttpContext, actionName, values: new { id }), "self", "GET"),
+                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(Add), values: new { }), "add_flightReservation", "POST"),
+                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(Update), values: new { id }), "update_flightReservation", "PUT"),
+                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(Delete), values: new { id }), "delete_flightReservation", "DELETE"),
+                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(ChangeNumberOfReservedSeats), values: new { id }), "edit_flightReservation", "PATCH"),
+            };
+            if(actionName == nameof(GetOne)) 
+            {
+                links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetFlightReservationAllData), values: new { id }), "get_flightReservation", "GET"));
+                links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetAsynchronouslyFlightReservationAllDataAsync), values: new { id }), "get_flightReservation", "GET"));
+            }
+            else if(actionName == nameof(GetFlightReservationAllData))
+            {
+                links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetOne), values: new { id }), "get_flightReservation", "GET"));
+                links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetAsynchronouslyFlightReservationAllDataAsync), values: new { id }), "get_flightReservation", "GET"));
+            }
+            else if (actionName == nameof(GetAsynchronouslyFlightReservationAllDataAsync))
+            {
+                links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetOne), values: new { id }), "get_flightReservation", "GET"));
+                links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetFlightReservationAllData), values: new { id }), "get_flightReservation2", "GET"));
+            }
+
+            return links;
+        }
+        private LinkCollectionWrapper<FlightReservationDto> CreateLinksForFlightReservations(List<FlightReservationDto> flightReservations, [CallerMemberName] string actionName = "")
+        {
+            LinkCollectionWrapper<FlightReservationDto> wrapper = new LinkCollectionWrapper<FlightReservationDto>(flightReservations);
+            wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetList), values: new { }), "self", "GET"));
+            wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(AddList), values: new { }), "add_flightReservations", "POST"));
+            wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, actionName == nameof(GetList) ? nameof(GetByValues) : nameof(GetList), values: new { }), "get_flightReservations", "GET"));
+            return wrapper;
         }
     }
 }

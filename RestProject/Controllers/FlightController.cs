@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using static iText.IO.Util.IntHashtable;
 using DB.Dto.Base;
 using DB.Dto.HATEOAS;
+using System.Runtime.CompilerServices;
 
 namespace RestProject.Controllers
 {
@@ -41,7 +42,7 @@ namespace RestProject.Controllers
             List<FlightDto> flights = flightService.GetAllDtoList();
             foreach (var flight in flights)
                 flight.Links = CreateLinksForFlight(flight.Id);
-            return Ok(CreateLinksForFlights(flights, nameof(GetList)));
+            return Ok(CreateLinksForFlights(flights));
         }
 
         [HttpPost]
@@ -98,28 +99,32 @@ namespace RestProject.Controllers
         }
 
         [HttpGet]
-        public ActionResult<string> GetByValues([FromQuery] string? departureAirport, [FromQuery] string? destinationAirport, [FromQuery] DateTime? departureTime, [FromQuery] DateTime? arrivalTime, [FromQuery] short? capacity)
+        public ActionResult GetByValues([FromQuery] string? departureAirport, [FromQuery] string? destinationAirport, [FromQuery] DateTime? departureTime, [FromQuery] DateTime? arrivalTime, [FromQuery] short? capacity)
         {
-            return Ok(flightService.GetByParameters(departureAirport, destinationAirport, departureTime, arrivalTime, capacity));
+            List<FlightDto> flights = flightService.GetByParameters(departureAirport, destinationAirport, departureTime, arrivalTime, capacity);
+            foreach (var flight in flights)
+                flight.Links = CreateLinksForFlight(flight.Id);
+            return Ok(CreateLinksForFlights(flights));
         }
 
 
         //HATEOAS
-        private List<Link> CreateLinksForFlight(int id, string fields = "")
+        private List<Link> CreateLinksForFlight(int id)
         {
             return new List<Link>
             {
-                    new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetOne), values: new { id }), "self", "GET"),
-                    new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(Delete), values: new { id }), "delete_flight", "DELETE"),
-                    new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(Update), values: new { id }), "update_flight", "PUT")
+                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetOne), values: new { id }), "self", "GET"),
+                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(Add), values: new { }), "add_flight", "POST"),
+                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(Update), values: new { id }), "update_flight", "PUT"),
+                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(Delete), values: new { id }), "delete_flight", "DELETE"),
             };
         }
-        private LinkCollectionWrapper<T> CreateLinksForFlights<T>(List<T> objects, string methodName)
+        private LinkCollectionWrapper<FlightDto> CreateLinksForFlights(List<FlightDto> flights, [CallerMemberName] string actionName = "")
         {
-            LinkCollectionWrapper<T> wrapper = new LinkCollectionWrapper<T>(objects);
-            wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, methodName, values: new { }),
-                    "self",
-                    "GET"));
+            LinkCollectionWrapper<FlightDto> wrapper = new LinkCollectionWrapper<FlightDto>(flights);
+            wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, actionName, values: new { }), "self", "GET"));
+            wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(AddList), values: new { }), "add_flights", "POST"));
+            wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, actionName == nameof(GetList) ? nameof(GetByValues) : nameof(GetList), values: new { }), "get_flights", "GET"));
             return wrapper;
         }
     }

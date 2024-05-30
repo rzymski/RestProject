@@ -1,6 +1,12 @@
-﻿using DB.Dto.User;
+﻿using DB.Dto.Flight;
+using DB.Dto.HATEOAS;
+using DB.Dto.User;
+using DB.Services;
 using DB.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
+using Org.BouncyCastle.Crypto;
+using System.Runtime.CompilerServices;
 
 namespace RestProject.Controllers
 {
@@ -10,11 +16,13 @@ namespace RestProject.Controllers
     {
         private readonly ILogger<UserController> logger;
         private readonly IUserService userService;
+        private LinkGenerator _linkGenerator;
 
-        public UserController(ILogger<UserController> logger, IUserService userService)
+        public UserController(ILogger<UserController> logger, IUserService userService, LinkGenerator linkGenerator)
         {
             this.logger = logger;
             this.userService = userService;
+            _linkGenerator = linkGenerator;
         }
 
         [HttpGet("{id}")]
@@ -23,13 +31,17 @@ namespace RestProject.Controllers
             var result = userService.GetByIdDtoObject(id);
             if (result == null)
                 return NotFound(new { user = $"User not found with id = {id}." });
+            result.Links = CreateLinksForUser(result.Id, result.Login);
             return Ok(result);
         }
 
         [HttpGet]
         public ActionResult<List<UserDto>> GetList()
         {
-            return Ok(userService.GetAllDtoList());
+            List<UserDto> users = userService.GetAllDtoList();
+            foreach (var user in users)
+                user.Links = CreateLinksForUser(user.Id, user.Login);
+            return Ok(CreateLinksForUsers(users));
         }
 
         [HttpPost]
@@ -90,8 +102,32 @@ namespace RestProject.Controllers
         {
             var user = userService.GetByLogin(login);
             if (user != null)
+            {
+                user.Links = CreateLinksForUser(user.Id, login);
                 return Ok(user);
+            }
             return NotFound();
+        }
+
+
+        //HATEOAS
+        private List<Link> CreateLinksForUser(int id, string login, [CallerMemberName] string actionName = "")
+        {
+            return new List<Link>
+            {
+                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetOne), values: new { id = id }), "self", "GET"),
+                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetByLogin), values: new { login=login }), "self", "GET"),
+                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(Add), values: new { }), "add_user", "POST"),
+                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(Update), values: new { id }), "update_user", "PUT"),
+                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(Delete), values: new { id }), "delete_user", "DELETE"),
+            };
+        }
+        private LinkCollectionWrapper<UserDto> CreateLinksForUsers(List<UserDto> users)
+        {
+            LinkCollectionWrapper<UserDto> wrapper = new LinkCollectionWrapper<UserDto>(users);
+            wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetList), values: new { }), "self", "GET"));
+            wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(AddList), values: new { }), "add_users", "POST"));
+            return wrapper;
         }
     }
 }
