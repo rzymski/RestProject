@@ -117,6 +117,7 @@ class AirportLogic:
         reservation = serialize(reservation)
         reservation['arrivalTime'] = AirportLogic.refactorDate(reservation['arrivalTime'])
         reservation['departureTime'] = AirportLogic.refactorDate(reservation['departureTime'])
+        reservation.pop("links")
         return reservation
 
     def cancelReservation(self, flightReservationId):

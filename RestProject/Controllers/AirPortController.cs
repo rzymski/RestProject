@@ -247,9 +247,11 @@ namespace RestProject.Controllers
         }
 
         [HttpPost]
-        public ActionResult<string> Echo([FromHeader] string username, [FromBody] string text)
+        public ActionResult<string> Echo([FromHeader] string? username, [FromBody] string text)
         {
-            Response.Headers["usernameExist"] = (userService.GetByLogin(username) != null).ToString();
+            Console.WriteLine($"\nParametry = {username} i {text}\n");
+            if (username != null)
+                Response.Headers["usernameExist"] = (userService.GetByLogin(username) != null).ToString();
             return Ok($"Serwer zwraca otrzymany text: {text}");
         }
 
