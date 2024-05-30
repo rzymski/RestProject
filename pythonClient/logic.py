@@ -13,7 +13,7 @@ class AirportLogic:
         self.username, self.email, self.password = [None] * 3
 
     def getAllAirports(self):
-        return [airport.title() for airport in json.loads(self.client.service("GetAvailableAirports", "GET", expectedResponseFormat="text"))]
+        return [airport.title() for airport in self.client.service("GetAvailableAirports", "GET", valueFieldName="airports")]
 
     def validateUser(self, username, password):
         ic("Logika walidacja: ", username, password)
@@ -103,7 +103,7 @@ class AirportLogic:
         return AirportLogic.refactorReservationList(reservationsData)
 
     def numberOfAvailableSeatsInFlight(self, flightId):
-        return self.client.service("GetFlightAvailableSeats", "GET", pathParameter=flightId)
+        return self.client.service("GetFlightAvailableSeats", "GET", pathParameter=flightId, valueFieldName="availableSeats")
 
     def reserveFlight(self, flightId, numberOfReservedSeats):
         return self.client.service("ReserveFlight", "POST", pathParameter=flightId, json=numberOfReservedSeats)

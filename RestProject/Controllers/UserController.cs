@@ -115,8 +115,8 @@ namespace RestProject.Controllers
         {
             return new List<Link>
             {
-                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetOne), values: new { id = id }), "self", "GET"),
-                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetByLogin), values: new { login=login }), "self", "GET"),
+                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetOne), values: new { id = id }), actionName == nameof(GetOne) ? "self" : "get_user", "GET"),
+                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetByLogin), values: new { login=login }), actionName == nameof(GetByLogin) ? "self" : "get_user", "GET"),
                 new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(Add), values: new { }), "add_user", "POST"),
                 new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(Update), values: new { id }), "update_user", "PUT"),
                 new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(Delete), values: new { id }), "delete_user", "DELETE"),

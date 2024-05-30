@@ -123,9 +123,9 @@ namespace RestProject.Controllers
         private LinkCollectionWrapper<FlightDto> CreateLinksForFlights(List<FlightDto> flights, [CallerMemberName] string actionName = "")
         {
             LinkCollectionWrapper<FlightDto> wrapper = new LinkCollectionWrapper<FlightDto>(flights);
-            wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, actionName, values: new { }), "self", "GET"));
+            wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetList), values: new { }), actionName == nameof(GetList) ? "self" : "get_flights", "GET"));
+            wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetByValues), values: new { departureAirport = "city", destinationAirport = "city", departureStartDateRange = DateTime.Now.ToString(), departureEndDateRange = DateTime.Now.ToString(), capacity=0 }), actionName == nameof(GetByValues) ? "self" : "get_flights", "GET"));
             wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(AddList), values: new { }), "add_flights", "POST"));
-            wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, actionName == nameof(GetList) ? nameof(GetByValues) : nameof(GetList), values: new { }), "get_flights", "GET"));
             return wrapper;
         }
     }

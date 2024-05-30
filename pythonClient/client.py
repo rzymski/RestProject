@@ -47,7 +47,7 @@ class AirportClient:
         self.password = password
 
     @printService
-    def service(self, serviceName, serviceMethod, pathParameter="", data=None, json=None, parameters=None, headers={}, matrixParameters=[], expectedResponseFormat="json"):
+    def service(self, serviceName, serviceMethod, pathParameter="", data=None, json=None, parameters=None, headers={}, matrixParameters=[], expectedResponseFormat="json", valueFieldName="value"):
         serviceUrl = f"{self.baseUrl}/{serviceName}/" + str(pathParameter) + ''.join([f";{matrixParam}" for matrixParam in matrixParameters])
         headers.update({"username": self.username, "password": self.password})
         try:
@@ -70,8 +70,8 @@ class AirportClient:
                 responseJson = requestResponse.json()
                 if isinstance(responseJson, int):
                     return responseJson
-                elif 'value' in responseJson and 'links' in responseJson:
-                    return responseJson['value']
+                if valueFieldName in responseJson and 'links' in responseJson:
+                    return responseJson[valueFieldName]
                 else:
                     return responseJson
             elif expectedResponseFormat.lower() == "xml" or expectedResponseFormat.lower() == "text":

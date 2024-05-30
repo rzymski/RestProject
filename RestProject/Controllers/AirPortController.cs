@@ -52,7 +52,14 @@ namespace RestProject.Controllers
         [HttpGet]
         public ActionResult<List<string>> GetAvailableAirports()
         {
-            return Ok(flightService.GetAllAirports());
+            List<string> airtports = flightService.GetAllAirports();
+            var links = CreateLinksForFlight(null);
+            var result = new
+            {
+                Airports = airtports,
+                Links = links
+            };
+            return Ok(result);
         }
 
         [HttpGet("{flightReservationId}")]
@@ -162,7 +169,14 @@ namespace RestProject.Controllers
         {
             try
             {
-                return Ok(flightService.GetFlightAvailableSeats(flightId));
+                int availableSeats = flightService.GetFlightAvailableSeats(flightId);
+                var links = CreateLinksForFlight(new FlightDto(flightId, "", "", DateTime.MinValue, "", DateTime.MinValue, 0));
+                var result = new
+                {
+                    AvailableSeats = availableSeats,
+                    Links = links
+                };
+                return Ok(result);
             }
             catch (InvalidOperationException ex)
             {
@@ -249,7 +263,6 @@ namespace RestProject.Controllers
         [HttpPost]
         public ActionResult<string> Echo([FromHeader] string? username, [FromBody] string text)
         {
-            Console.WriteLine($"\nParametry = {username} i {text}\n");
             if (username != null)
                 Response.Headers["usernameExist"] = (userService.GetByLogin(username) != null).ToString();
             return Ok($"Serwer zwraca otrzymany text: {text}");
@@ -257,38 +270,38 @@ namespace RestProject.Controllers
 
 
         // HATEOAS
-        private List<Link> CreateLinksForFlight(FlightDto? flight)
+        private List<Link> CreateLinksForFlight(FlightDto? flight, [CallerMemberName] string actionName = "")
         {
             int flightIdValue = flight != null ? flight.Id : 0;
             return new List<Link>
             {
-                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetFlightById), values: new { flightId = flightIdValue }), "self", "GET"),
-                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetAvailableAirports)), "available_airports", "GET"),
+                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetFlightById), values: new { flightId = flightIdValue }), actionName == nameof(GetFlightById) ? "self" : "get_flight", "GET"),
+                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetAvailableAirports)), actionName == nameof(GetAvailableAirports) ? "self" : "available_airports", "GET"),
                 new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(ReserveFlight), values: new { flightId = flightIdValue }), "reserve_flight", "POST"),
-                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetFlightAvailableSeats), values: new { flightId = flightIdValue }), "available_seats", "GET")
+                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetFlightAvailableSeats), values: new { flightId = flightIdValue }), actionName == nameof(GetFlightAvailableSeats) ? "self" : "available_seats", "GET")
             };
         }
 
-        private LinkCollectionWrapper<FlightDto> CreateLinksForFlights(List<FlightDto> flights)
+        private LinkCollectionWrapper<FlightDto> CreateLinksForFlights(List<FlightDto> flights, [CallerMemberName] string actionName = "")
         {
             LinkCollectionWrapper<FlightDto> wrapper = new LinkCollectionWrapper<FlightDto>(flights);
-            wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetFlightsData)), "get_all_flights", "GET"));
-            wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetAllQualifyingFlights), values: new { departureAirport = "city", destinationAirport = "city", departureStartDateRange = DateTime.Now.ToString(), departureEndDateRange = DateTime.Now.ToString() }), "get_flights_with_parameters", "GET"));
+            wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetFlightsData)), actionName == nameof(GetFlightsData) ? "self" : "get_all_flights", "GET"));
+            wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetAllQualifyingFlights), values: new { departureAirport = "city", destinationAirport = "city", departureStartDateRange = DateTime.Now.ToString(), departureEndDateRange = DateTime.Now.ToString() }), actionName == nameof(GetAllQualifyingFlights) ? "self" : "get_flights_with_parameters", "GET"));
             return wrapper;
         }
 
 
-        private List<Link> CreateLinksForFlightReservation(FlightReservationDto? flightReservation)
+        private List<Link> CreateLinksForFlightReservation(FlightReservationDto? flightReservation, [CallerMemberName] string actionName = "")
         {
             int flightIdValue = flightReservation != null ? flightReservation.FlightId : 0;
             int reservationIdValue = flightReservation != null ? flightReservation.Id : 0;
             return new List<Link>
             {
-                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(CheckFlightReservation), values: new { flightReservationId = reservationIdValue }), "self", "GET"),
+                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(CheckFlightReservation), values: new { flightReservationId = reservationIdValue }), actionName == nameof(CheckFlightReservation) ? "self" : "get_flightReservation", "GET"),
                 new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(ReserveFlight), values: new { flightId = flightIdValue }), "reserve_flight", "POST"),
                 new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(CancelFlightReservation), values: new { flightReservationId = reservationIdValue }), "cancel_flight_reservation", "DELETE"),
                 new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(CancelUserReservationInConcreteFlight), values: new { flightId = flightIdValue }), "cancel_user_reservation_in_concrete_flight", "DELETE"),
-                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GeneratePDF), values: new { flightReservationId = reservationIdValue }), "generate_pdf", "GET")
+                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GeneratePDF), values: new { flightReservationId = reservationIdValue }), actionName == nameof(GeneratePDF) ? "self" : "generate_pdf", "GET")
             };
         }
 
@@ -296,38 +309,26 @@ namespace RestProject.Controllers
         {
             string login = flightReservations.Count != 0 ? flightReservations.First().Login : "username";
             LinkCollectionWrapper<FlightReservationAllFieldsDto> wrapper = new LinkCollectionWrapper<FlightReservationAllFieldsDto>(flightReservations);
-            wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetUserReservations), values: new { username = login }), "self", "GET"));
-            wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetFlightsData)), "get_all_flights", "GET"));
+            wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetUserReservations), values: new { username = login }), actionName == nameof(GetUserReservations) ? "self" : "get_user_reservations", "GET"));
+            wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetFlightsData)), actionName == nameof(GetFlightsData) ? "self" : "get_all_flights", "GET"));
+            wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(CreateUser)), "create_user", "POST"));
             return wrapper;
         }
 
-
-        private List<Link> CreateLinksForUser(UserDto? user)
-        {
-            return new List<Link>
-            {
-                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(CreateUser), values: new { }), "add_user", "POST"),
-                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(ReserveFlight), values: new { flightId = 0 }), "reserve_flight", "POST")
-            };
-        }
-
-        private LinkCollectionWrapper<UserDto> CreateLinksForUsers(List<UserDto> users, string username)
-        {
-            LinkCollectionWrapper<UserDto> wrapper = new LinkCollectionWrapper<UserDto>(users);
-            wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetUserReservations), values: new { username = "username" }), "self", "GET"));
-            wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetFlightsData)), "get_all_flights", "GET"));
-            return wrapper;
-        }
-
-        //private IEnumerable<Link> CreateLinksForFlight(int flightReservationId, string fields = "")
+        //private List<Link> CreateLinksForUser(UserDto? user)
         //{
-        //    var links = new List<Link>
+        //    return new List<Link>
         //    {
-        //            new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetFlightById), values: new { flightReservationId, fields }), "self", "GET"),
-        //            new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(DeleteFlight), values: new { flightReservationId }), "delete_flight", "DELETE"),
-        //        new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(UpdateFlight), values: new { flightReservationId }), "update_flight", "PUT")
+        //        new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(CreateUser), values: new { }), "add_user", "POST"),
+        //        new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(ReserveFlight), values: new { flightId = 0 }), "reserve_flight", "POST")
         //    };
-        //    return links;
+        //}
+        //private LinkCollectionWrapper<UserDto> CreateLinksForUsers(List<UserDto> users, string username)
+        //{
+        //    LinkCollectionWrapper<UserDto> wrapper = new LinkCollectionWrapper<UserDto>(users);
+        //    wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetUserReservations), values: new { username = "username" }), "self", "GET"));
+        //    wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetFlightsData)), "get_all_flights", "GET"));
+        //    return wrapper;
         //}
 
 
