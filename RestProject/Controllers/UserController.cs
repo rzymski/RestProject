@@ -122,6 +122,7 @@ namespace RestProject.Controllers
                 new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(Delete), values: new { id }), "delete_user", "DELETE"),
             };
         }
+
         private LinkCollectionWrapper<UserDto> CreateLinksForUsers(List<UserDto> users)
         {
             LinkCollectionWrapper<UserDto> wrapper = new LinkCollectionWrapper<UserDto>(users);
