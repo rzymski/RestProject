@@ -2,8 +2,6 @@
 using DB.Dto.FlightReservation;
 using DB.Dto.HATEOAS;
 using RestProject.Controllers;
-using RestProject.Controllers.ControllersWithLinks;
-using System.Runtime.CompilerServices;
 
 namespace RestProject.HATEOAS.Services
 {
@@ -64,11 +62,11 @@ namespace RestProject.HATEOAS.Services
                 throw new InvalidOperationException("Controller name is not available, can't add links in HATEOAS service.");
             return new List<Link>
             {
-                new Link(_linkGenerator.GetUriByAction(httpContext, nameof(AirportWithLinksController.CheckFlightReservation), controllerName, new { flightReservationId = reservationId }), actionName == nameof(AirportWithLinksController.CheckFlightReservation) ? "self" : "get_flightReservation", "GET"),
-                new Link(_linkGenerator.GetUriByAction(httpContext, nameof(AirportWithLinksController.ReserveFlight), controllerName, new { flightId = flightId }), "reserve_flight", "POST"),
-                new Link(_linkGenerator.GetUriByAction(httpContext, nameof(AirportWithLinksController.CancelFlightReservation), controllerName, new { flightReservationId = reservationId }), "cancel_flight_reservation", "DELETE"),
-                new Link(_linkGenerator.GetUriByAction(httpContext, nameof(AirportWithLinksController.CancelUserReservationInConcreteFlight), controllerName, new { flightId = flightId }), "cancel_user_reservation_in_concrete_flight", "DELETE"),
-                new Link(_linkGenerator.GetUriByAction(httpContext, nameof(AirportWithLinksController.GeneratePDF), controllerName, new { flightReservationId = reservationId }), actionName == nameof(AirportWithLinksController.GeneratePDF) ? "self" : "generate_pdf", "GET")
+                new Link(_linkGenerator.GetUriByAction(httpContext, nameof(AirportController.CheckFlightReservation), controllerName, new { flightReservationId = reservationId }), actionName == nameof(AirportController.CheckFlightReservation) ? "self" : "get_flightReservation", "GET"),
+                new Link(_linkGenerator.GetUriByAction(httpContext, nameof(AirportController.ReserveFlight), controllerName, new { flightId = flightId }), "reserve_flight", "POST"),
+                new Link(_linkGenerator.GetUriByAction(httpContext, nameof(AirportController.CancelFlightReservation), controllerName, new { flightReservationId = reservationId }), "cancel_flight_reservation", "DELETE"),
+                new Link(_linkGenerator.GetUriByAction(httpContext, nameof(AirportController.CancelUserReservationInConcreteFlight), controllerName, new { flightId = flightId }), "cancel_user_reservation_in_concrete_flight", "DELETE"),
+                new Link(_linkGenerator.GetUriByAction(httpContext, nameof(AirportController.GeneratePDF), controllerName, new { flightReservationId = reservationId }), actionName == nameof(AirportController.GeneratePDF) ? "self" : "generate_pdf", "GET")
             };
         }
 
@@ -82,11 +80,10 @@ namespace RestProject.HATEOAS.Services
                 throw new InvalidOperationException("Controller name is not available, can't add links in HATEOAS service.");
             string login = flightReservations.Count != 0 ? flightReservations.First().Login : "username";
             var wrapper = new LinkCollectionWrapper<FlightReservationAllFieldsDto>(flightReservations);
-            wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(httpContext, nameof(AirportWithLinksController.GetUserReservations), controllerName, new { username = login }), actionName == nameof(AirportWithLinksController.GetUserReservations) ? "self" : "get_user_reservations", "GET"));
-            wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(httpContext, nameof(AirportWithLinksController.GetFlightsData), controllerName), actionName == nameof(AirportWithLinksController.GetFlightsData) ? "self" : "get_all_flights", "GET"));
-            wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(httpContext, nameof(AirportWithLinksController.CreateUser), controllerName), "create_user", "POST"));
+            wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(httpContext, nameof(AirportController.GetUserReservations), controllerName, new { username = login }), actionName == nameof(AirportController.GetUserReservations) ? "self" : "get_user_reservations", "GET"));
+            wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(httpContext, nameof(AirportController.GetFlightsData), controllerName), actionName == nameof(AirportController.GetFlightsData) ? "self" : "get_all_flights", "GET"));
+            wrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(httpContext, nameof(AirportController.CreateUser), controllerName), "create_user", "POST"));
             return wrapper;
         }
-
     }
 }

@@ -1,4 +1,4 @@
-﻿using DB.Dto.HATEOAS;
+﻿/*using DB.Dto.HATEOAS;
 using DB.Dto.User;
 using DB.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -129,3 +129,4 @@ public class UserWithLinksController : ControllerBase
         return wrapper;
     }
 }
+*/

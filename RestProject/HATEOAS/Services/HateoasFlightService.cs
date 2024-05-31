@@ -1,8 +1,6 @@
 ﻿using DB.Dto.Flight;
 using DB.Dto.HATEOAS;
-using Microsoft.AspNetCore.Mvc;
 using RestProject.Controllers;
-using System.Runtime.CompilerServices;
 
 namespace RestProject.HATEOAS.Services
 {

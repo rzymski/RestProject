@@ -1,4 +1,4 @@
-﻿using DB.Dto.Flight;
+﻿/*using DB.Dto.Flight;
 using DB.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using DB.Dto.HATEOAS;
@@ -126,3 +126,4 @@ public class FlightWithLinksController : ControllerBase
         return wrapper;
     }
 }
+*/

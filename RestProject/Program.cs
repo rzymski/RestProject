@@ -74,4 +74,4 @@ app.UseMiddleware<AddServicePathToHeader>();
 app.UseMiddleware<MeasureTimeMiddleware>();
 app.UseMiddleware<UserAuthenticationMiddleware>();
 
-app.Run("https://localhost:8080");
+app.Run($"https://*:8080");

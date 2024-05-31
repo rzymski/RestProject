@@ -1,9 +1,6 @@
 ﻿using DB.Dto.FlightReservation;
 using DB.Dto.HATEOAS;
-using Microsoft.AspNetCore.Mvc;
 using RestProject.Controllers;
-using System.Runtime.CompilerServices;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace RestProject.HATEOAS.Services
 {
