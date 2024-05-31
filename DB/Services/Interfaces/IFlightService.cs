@@ -7,7 +7,7 @@ namespace DB.Services.Interfaces
     {
         List<FlightDto> GetByParameters(string? departureAirport, string? destinationAirport, DateTime? departureTime, DateTime? arrivalTime, short? capacity);
         public List<string> GetAllAirports();
-        public int GetFlightAvailableSeats(int flightId);
+        public int GetFlightAvailableSeats(int flightId, string? username);
         List<FlightDto> GetAllQualifyingFlights(string? departureAirport, string? destinationAirport, DateTime? departureStartDateRange, DateTime? departureEndDateRange);
     }
 }

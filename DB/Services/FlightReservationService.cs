@@ -11,10 +11,10 @@ namespace DB.Services
     public class FlightReservationService : BaseService<FlightReservation, FlightReservationDto, FlightReservationAddEditDto>, IFlightReservationService
     {
         private readonly IFlightReservationRepository flightReservationRepository;
-        private readonly IBaseRepository<Flight> flightRepository;
-        private readonly IBaseRepository<User> userRepository;
+        private readonly IFlightRepository flightRepository;
+        private readonly IUserRepository userRepository;
 
-        public FlightReservationService(IFlightReservationRepository repository, IBaseRepository<Flight> flightRepository, IBaseRepository<User> userRepository) : base(repository) 
+        public FlightReservationService(IFlightReservationRepository repository, IFlightRepository flightRepository, IUserRepository userRepository) : base(repository) 
         { 
             this.flightReservationRepository = repository;
             this.flightRepository = flightRepository;

@@ -16,11 +16,24 @@ namespace DB.Repositories
             return allAirports;
         }
 
-        public int GetFlightAvailableSeats(int flightId)
+        public int GetFlightAvailableSeats(int flightId, string? username)
         {
-            Flight flight = _dbContext.Set<Flight>().Single(x => x.Id == flightId);
-            var totalReservedSeats = _dbContext.FlightReservations.Where(fr => fr.FlightId == flightId).Sum(fr => fr.NumberOfReservedSeats);
-            return flight.Capacity - totalReservedSeats;
+            Flight? flight = _dbContext.Flights.Include(f => f.FlightReservations).SingleOrDefault(f => f.Id == flightId);
+            if (flight == null)
+                throw new InvalidOperationException($"Flight with id = {flightId} does not exist.");
+            int totalReservedSeats = flight.FlightReservations.Sum(fr => fr.NumberOfReservedSeats);
+            int actuallyReservedSeatsByThisUser = 0;
+            if (!string.IsNullOrEmpty(username))
+            {
+                User? user = _dbContext.Users.SingleOrDefault(u => u.Login == username);
+                if (user != null)
+                {
+                    var userReservation = flight.FlightReservations.SingleOrDefault(fr => fr.UserId == user.Id);
+                    if (userReservation != null)
+                        actuallyReservedSeatsByThisUser = userReservation.NumberOfReservedSeats;
+                }
+            }
+            return flight.Capacity - totalReservedSeats + actuallyReservedSeatsByThisUser;
         }
     }
 }

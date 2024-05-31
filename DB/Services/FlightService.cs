@@ -60,12 +60,12 @@ namespace DB.Services
             return flightRepository.GetAllAirports();
         }
 
-        public int GetFlightAvailableSeats(int flightId)
+        public int GetFlightAvailableSeats(int flightId, string? username)
         {
             Flight? flight = flightRepository.GetById(flightId);
-            if(flight == null)
+            if (flight == null)
                 throw new InvalidOperationException($"Flight with id = {flightId} does not exist.");
-            return flightRepository.GetFlightAvailableSeats(flightId);
+            return flightRepository.GetFlightAvailableSeats(flightId, username);
         }
 
         public List<FlightDto> GetAllQualifyingFlights(string? departureAirport, string? destinationAirport, DateTime? departureStartDateRange, DateTime? departureEndDateRange)
