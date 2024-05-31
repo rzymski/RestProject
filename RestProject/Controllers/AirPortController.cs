@@ -3,6 +3,7 @@ using DB.Dto.FlightReservation;
 using DB.Dto.User;
 using DB.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using RestProject.Filters;
 using RestProject.HATEOAS.Filters;
 using RestProject.pdfGenerator;
 
@@ -71,11 +72,12 @@ public class AirportController : ControllerBase
     }
 
     [HttpPost("{flightId}")]
-    public ActionResult ReserveFlight([FromRoute] int flightId, [FromBody] short numberOfReservedSeats, [FromHeader] string username, [FromHeader] string password)
+    [ServiceFilter(typeof(BasicAuthFilter))]
+    public ActionResult ReserveFlight([FromRoute] int flightId, [FromBody] short numberOfReservedSeats)
     {
-        UserDto? user = HttpContext.Items["CurrentUser"] as UserDto;
+        UserDto? user = HttpContext.Items["UserBasicAuthorization"] as UserDto;
         if (user == null)
-            return NotFound($"Not found user with username: {username} and given password");
+            return NotFound($"Not found user with username: {user?.Login} and given password");
         var existFlightReservation = flightReservationService.GetByParameters(flightId, user.Id).SingleOrDefault();
         if (existFlightReservation == null)
             return Ok(flightReservationService.Add(new FlightReservationAddEditDto(flightId, user.Id, numberOfReservedSeats)));
@@ -96,14 +98,15 @@ public class AirportController : ControllerBase
     }
 
     [HttpDelete("{flightId}")]
-    public ActionResult CancelUserReservationInConcreteFlight([FromRoute] int flightId, [FromHeader] string username, [FromHeader] string password)
+    [ServiceFilter(typeof(BasicAuthFilter))]
+    public ActionResult CancelUserReservationInConcreteFlight([FromRoute] int flightId)
     {
-        UserDto? user = HttpContext.Items["CurrentUser"] as UserDto;
+        UserDto? user = HttpContext.Items["UserBasicAuthorization"] as UserDto;
         if (user == null)
-            return NotFound($"Not found user with username: {username} and given password");
+            return NotFound($"Not found user with username: {user?.Login} and given password");
         var flightReservation = flightReservationService.GetByParameters(flightId, user.Id).SingleOrDefault();
         if (flightReservation == null)
-            return NotFound($"User with username: {username} don't have reservation on flight with flightId = {flightId}.");
+            return NotFound($"User with username: {user?.Login} don't have reservation on flight with flightId = {flightId}.");
         var result = flightReservationService.Delete(flightReservation.Id);
         if (result)
             return NoContent();
@@ -238,6 +241,14 @@ public class AirportController : ControllerBase
         if (username != null)
             Response.Headers["usernameExist"] = (userService.GetByLogin(username) != null).ToString();
         return Ok($"Serwer zwraca otrzymany text: {text}");
+    }
+
+
+    [HttpGet]
+    [ServiceFilter(typeof(BasicAuthFilter))]
+    public ActionResult<string> ValidateUser()
+    {
+        return Ok("Udało się zaautoryzowac uzytkownika przez Basic Auth!");
     }
 
 

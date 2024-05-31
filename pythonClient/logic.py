@@ -103,7 +103,7 @@ class AirportLogic:
         return AirportLogic.refactorReservationList(reservationsData)
 
     def numberOfAvailableSeatsInFlight(self, flightId):
-        return self.client.service("GetFlightAvailableSeats", "GET", pathParameter=flightId, valueFieldName="availableSeats")
+        return self.client.service("GetFlightAvailableSeats", "GET", pathParameter=flightId)  # , valueFieldName="availableSeats"
 
     def reserveFlight(self, flightId, numberOfReservedSeats):
         return self.client.service("ReserveFlight", "POST", pathParameter=flightId, json=numberOfReservedSeats)

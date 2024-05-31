@@ -36,7 +36,7 @@ namespace RestProject.HATEOAS.Services
                 new Link(_linkGenerator.GetUriByAction(httpContext, nameof(AirportController.GetFlightById), controllerName, new { flightId }), actionName == nameof(AirportController.GetFlightById) ? "self" : "get_flight", "GET"),
                 new Link(_linkGenerator.GetUriByAction(httpContext, nameof(AirportController.GetAvailableAirports), controllerName, new { }), actionName == nameof(AirportController.GetAvailableAirports) ? "self" : "get_airports", "GET"),
                 new Link(_linkGenerator.GetUriByAction(httpContext, nameof(AirportController.GetFlightAvailableSeats), controllerName, new { flightId }), actionName == nameof(AirportController.GetFlightAvailableSeats) ? "self" : "get_flight_available_seats", "GET"),
-                new Link(_linkGenerator.GetUriByAction(httpContext, nameof(AirportController.ReserveFlight), controllerName, new { flightId }), "reserve_fligh", "POST"),
+                new Link(_linkGenerator.GetUriByAction(httpContext, nameof(AirportController.ReserveFlight), controllerName, new { flightId }), actionName == nameof(AirportController.ReserveFlight) ? "self" : "reserve_fligh", "POST"),
             };
         }
 

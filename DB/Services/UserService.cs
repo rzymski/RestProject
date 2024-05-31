@@ -76,5 +76,10 @@ namespace DB.Services
                                                             (string.IsNullOrEmpty(email) || p.Password.Equals(email))).Select(MapToDto).ToList();
             return results;
         }
+
+        public bool Validate(string login, string password)
+        {
+            return baseRepository.GetAll().Any(p => p.Login.Equals(login) && p.Password.Equals(password));
+        }
     }
 }

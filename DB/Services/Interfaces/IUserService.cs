@@ -8,5 +8,6 @@ namespace DB.Services.Interfaces
     {
         UserDto? GetByLogin(string login);
         List<UserDto> GetByParameters(string? login, string? password, string? email = null);
+        bool Validate(string login, string password);
     }
 }

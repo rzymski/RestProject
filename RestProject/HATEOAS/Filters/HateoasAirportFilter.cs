@@ -30,7 +30,6 @@ namespace RestProject.HATEOAS.Filters
                     flightDto.Links = _hateoasService.CreateLinksForFlight(flightDto.Id, actionName);
                 else if (okObjectResult.Value is List<FlightDto> flights)
                 {
-                    Console.WriteLine("\nDZIALA PRAWIDLOWOW\n");
                     foreach (var flight in flights)
                         flight.Links = _hateoasService.CreateLinksForFlight(flight.Id, actionName);
                     okObjectResult.Value = _hateoasService.CreateLinksForFlights(flights, actionName);
@@ -53,11 +52,11 @@ namespace RestProject.HATEOAS.Filters
                         Links = _hateoasService.CreateLinksForFlight(0, actionName)
                     };
                 }
-                else if (okObjectResult.Value is int availableSeats)
+                else if (okObjectResult.Value is int value)
                 {
                     okObjectResult.Value = new
                     {
-                        AvailableSeats = availableSeats,
+                        Value = value,
                         Links = _hateoasService.CreateLinksForFlight(0, actionName)
                     };
                 }

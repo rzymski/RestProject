@@ -4,6 +4,8 @@ using DB.Repositories.Interfaces;
 using DB.Services;
 using DB.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using RestProject.Filters;
 using RestProject.HATEOAS.Filters;
 using RestProject.HATEOAS.Services;
 using RestProject.Middleware;
@@ -34,15 +36,17 @@ builder.Services.AddHttpContextAccessor();
 
 
 // Rejestracja HateoasServices i HateoasFilters
-builder.Services.AddSingleton<HateoasFlightService>();
+builder.Services.AddScoped<HateoasFlightService>();
 builder.Services.AddScoped<HateoasFlightFilter>();
-builder.Services.AddSingleton<HateoasUserService>();
+builder.Services.AddScoped<HateoasUserService>();
 builder.Services.AddScoped<HateoasUserFilter>();
-builder.Services.AddSingleton<HateoasFlightReservationService>();
+builder.Services.AddScoped<HateoasFlightReservationService>();
 builder.Services.AddScoped<HateoasFlightReservationFilter>();
-builder.Services.AddSingleton<HateoasAirportService>();
+builder.Services.AddScoped<HateoasAirportService>();
 builder.Services.AddScoped<HateoasAirportFilter>();
 
+//Dodanie Filtru autoryzujacego
+builder.Services.AddScoped<BasicAuthFilter>(_ => new BasicAuthFilter("MyRealm", _.GetRequiredService<IUserService>()));
 
 
 // Add services to the container.

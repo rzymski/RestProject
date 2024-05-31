@@ -1,4 +1,5 @@
 import requests
+from requests.auth import HTTPBasicAuth
 from requests.exceptions import ConnectionError
 from urllib3.exceptions import NewConnectionError, MaxRetryError
 from icecream import ic
@@ -50,6 +51,7 @@ class AirportClient:
     def service(self, serviceName, serviceMethod, pathParameter="", data=None, json=None, parameters=None, headers={}, matrixParameters=[], expectedResponseFormat="json", valueFieldName="value"):
         serviceUrl = f"{self.baseUrl}/{serviceName}/" + str(pathParameter) + ''.join([f";{matrixParam}" for matrixParam in matrixParameters])
         headers.update({"username": self.username, "password": self.password})
+        authHeader = requests.auth.HTTPBasicAuth(self.username, self.password) if self.username and self.password else None
         try:
             requestResponse = requests.request(
                 url=serviceUrl,
@@ -58,7 +60,8 @@ class AirportClient:
                 params=parameters,
                 data=data,  # Używany do wysyłania surowych danych
                 json=json,  # Używany do wysyłania danych jako JSON
-                verify=self.certificate
+                verify=self.certificate,
+                auth=authHeader
             )
             self.responseHeaders.update(AirportClient.getHeadersFromResponse(requestResponse, ("userValidation",)))
             ic(self.responseHeaders)

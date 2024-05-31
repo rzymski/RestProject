@@ -26,14 +26,14 @@ namespace RestProject.Middleware
                 if (user != null)
                 {
                     context.Response.Headers["userValidation"] = true.ToString();
-                    context.Items["CurrentUser"] = user;
+                    context.Items["UserAuthenticationMiddleware"] = user;
                     await _next(context);
                     return;
                 }
             }
 
             context.Response.Headers["userValidation"] = false.ToString();
-            context.Items["CurrentUser"] = null;
+            context.Items["UserAuthenticationMiddleware"] = null;
             await _next(context);
         }
     }
