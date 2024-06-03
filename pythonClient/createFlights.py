@@ -31,7 +31,7 @@ for day in range(10):
                 flights.append(flight)
 
 
-client = AirportClient("localhost", 8080, "Flight", certificate="certificate.pem")
+client = AirportClient("localhost", 8080, "Flight", certificate=False)
 
 response = client.service("AddList", "POST", json=flights)
 

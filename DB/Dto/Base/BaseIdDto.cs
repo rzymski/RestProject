@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using DB.Dto.HATEOAS;
+using System.ComponentModel.DataAnnotations;
 
 namespace DB.Dto.Base
 {
@@ -6,6 +7,7 @@ namespace DB.Dto.Base
     {
         [Required]
         public int Id { get; set; }
+        public List<Link> Links { get; set; } = new List<Link>();
 
         public BaseIdDto() { }
 

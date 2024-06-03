@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DB.Dto.FlightReservation
 {
-    public class FlightReservationAllFieldsDto : BaseDto
+    public class FlightReservationAllFieldsDto : BaseIdDto
     {
         public int ReservationId { get; set; }
         public short NumberOfReservedSeats { get; set; }

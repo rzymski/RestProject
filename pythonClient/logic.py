@@ -118,6 +118,7 @@ class AirportLogic:
         reservation['arrivalTime'] = AirportLogic.refactorDate(reservation['arrivalTime'])
         reservation['departureTime'] = AirportLogic.refactorDate(reservation['departureTime'])
         reservation.pop("links")
+        reservation.pop("id")
         return reservation
 
     def cancelReservation(self, flightReservationId):
