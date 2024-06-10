@@ -12,7 +12,7 @@ ___
 7. :eyes: [Monitorowanie requestów](#instrukcja-monitorowania-requestów)
 8. :file_folder: [Struktura projektu](#struktura-projektu)
 9. :white_check_mark: [Wskazówki](#wskazówki-użycia)
-10. :godmode: [SWAGGER](#swagger)
+10. :godmode: [Przykład](#przykład)
 
 # Funkcjonalność
 **System rezerwacji biletów lotniczych**
@@ -115,3 +115,23 @@ Wymaga Windows Powershell i OpenSSL
 
 # Użycie skryptu pythonowego do modyfikowania bazy danych
 Skrypt pythonowy znajduje się w pliku <b><code>createFlights.py</code></b> w folderze <b>pythonClient</b>
+
+# Przykład
+
+Przykład w postmanie użycia servisu ReserveFlight:		
+<h3><details>
+    <summary>ReserveFlight body</summary>           
+        <img src="screens/example1.png?raw=true" alt="Postman example ReserveFlight body">
+</details></h3>
+<h3><details>
+    <summary>ReserveFlight authentication</summary>           
+        <img src="screens/example2.png?raw=true" alt="Postman example ReserveFlight authentication">
+</details></h3>
+<h3><details>
+    <summary>ReserveFlight response body</summary>           
+        <img src="screens/example3.png?raw=true" alt="Postman example ReserveFlight response body">
+</details></h3>
+<h3><details>
+    <summary>ReserveFlight response headers</summary>           
+        <img src="screens/example4.png?raw=true" alt="Postman example ReserveFlight response headers">
+</details></h3>

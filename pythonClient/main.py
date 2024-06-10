@@ -7,7 +7,7 @@ if __name__ == "__main__":
     try:
         rootInterface = Tk()
         # app = AirportInterface(rootInterface, AirportLogic(AirportClient("localhost", 8080, "Airport", certificate=False)))
-        app = AirportInterface(rootInterface, AirportLogic(AirportClient("localhost", 8080, "Airport", certificate="certificate.pem", verify=False)))
+        app = AirportInterface(rootInterface, AirportLogic(AirportClient("localhost", 8080, "Airport", certificate="certificate.pem", verify=True)))
         rootInterface.mainloop()
     except ValueError as e:
         print(e)
