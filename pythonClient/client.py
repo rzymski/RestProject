@@ -19,7 +19,7 @@ class AirportClient:
     #
     # def checkServerAvailability(self, ipAddress, serverPort):
     #     baseServerUrl = f"https://{ipAddress}:{serverPort}"
-    #     try:
+    #     try:  
     #         checkResponse = requests.get(baseServerUrl, verify=self.certificate)
     #     except(ConnectionRefusedError, ConnectionError, NewConnectionError, MaxRetryError) as e:
     #         raise ValueError(f"Nie udało się połączyć z adresem URL = {baseServerUrl}. Najprawdopodobniej serwer jest wyłączony.")
