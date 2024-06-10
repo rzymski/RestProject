@@ -6,12 +6,15 @@ from icecream import ic
 from datetime import datetime, timedelta
 import tkinter as tk
 from tkinter import filedialog
+import urllib3
 
 
 class AirportClient:
-    def __init__(self, ipAddress, serverPort, controllerName, username=None, password=None, proxyPorts=(), proxyInClientSide=True, certificate=False):
+    def __init__(self, ipAddress, serverPort, controllerName, username=None, password=None, proxyPorts=(), proxyInClientSide=True, certificate=False, verify=True):
         self.baseUrl = f"https://{ipAddress}:{serverPort}/{controllerName}"
         self.certificate = certificate
+        self.verify = verify
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
         self.username = username
         self.password = password
         self.responseHeaders = {}
@@ -60,7 +63,8 @@ class AirportClient:
                 params=parameters,
                 data=data,  # Używany do wysyłania surowych danych
                 json=json,  # Używany do wysyłania danych jako JSON
-                verify=self.certificate,
+                cert=self.certificate,
+                verify=self.verify,
                 auth=authHeader
             )
             self.responseHeaders.update(AirportClient.getHeadersFromResponse(requestResponse, ("userValidation",)))
