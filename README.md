@@ -9,7 +9,6 @@ ___
 4. :dragon: [Konfiguracja klienta w pythonie](#instrukcja-konfiguracji-klienta)
 5. :lock: [Konfiguracja certifikatu SSL dla klienta](#instrukcja-konfiguracji-certifikatu-ssl-dla-klienta-w-pythonie)
 6. :satellite: [Modyfikowanie bazy danych](#użycie-skryptu-pythonowego-do-modyfikowania-bazy-danych)
-7. :eyes: [Monitorowanie requestów](#instrukcja-monitorowania-requestów)
 8. :godmode: [Przykład](#przykład)
 
 # Funkcjonalność
